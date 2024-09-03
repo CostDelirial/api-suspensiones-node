@@ -3,7 +3,7 @@ import userRouter from './user.routes'
 
 const routers = express()
 
-routers.use("/api/user",userRouter)
+routers.use('/api/user',userRouter)
 
 
 export default routers
