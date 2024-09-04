@@ -26,14 +26,13 @@ export default class PostgresConn {
                 port: config.get('db.port') as number,
                 dialect: 'postgres',
                 logging: (msg) => logger.info(`[Postgres]`),
-
                 models: [UserModel],  // Registra tus modelos aquí
                 
             })
             try {
                 await this.sequelize.authenticate()
                 logger.info(`Connected to database ${config.get('db.name')}`)
-                // await this.sequelize.sync({force: true}) //// solo  desarrollo
+                //await this.sequelize.sync({force: true}) //// solo  desarrollo
                 // logger.info('Database synchronized.');
             } catch (err) {
                 logger.error(`Error connecting to database: ${err}`);

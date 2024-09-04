@@ -1,5 +1,8 @@
 export default interface IUser{
-    nombre: string
+    name: string
     ficha: number
     password: string
+    status: string
+    role: string
+    salt?: string
 }
