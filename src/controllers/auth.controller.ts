@@ -28,6 +28,7 @@ export default class AuthControll{
             }
 
             const frontUser = {
+                id: user.id,
                 name: user.name,
                 ficha: user.ficha,
                 role: user.role,

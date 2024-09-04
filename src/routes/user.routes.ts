@@ -8,8 +8,9 @@ const checkToken = new Authenticate()
 
 userRouter.post('/',checkToken.autetication, async(req: Request, res: Response ) => {
     try{
+        const isAdmin= req.body.user_client
         const body = req.body
-        const response = await userController.createUser(body)
+        const response = await userController.createUser(body,isAdmin)
         return res.status(response.code).json(response)
     }catch(err: any){
         return res.status(err.code ? err.code : 500)
