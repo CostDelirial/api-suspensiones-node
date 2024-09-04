@@ -21,6 +21,32 @@ export default class UserService {
         }
     }
 
+
+    async getUsers(){
+        try{
+            await this.db.connectDB()
+            const users = await UserModel.findAll()
+            return users
+        }catch(err){    
+            throw err
+        }finally{
+            await this.db.disconnectDB()
+        }
+    }
+
+    async getUserById(idUser: number){
+        try{
+            await this.db.connectDB()
+            const userById = await UserModel.findByPk(idUser)
+            return userById
+        }catch(err){
+            
+            throw err
+        }finally{
+            await this.db.disconnectDB()
+        }
+    }
+
     async getUser(ficha: number){
         try{
             await this.db.connectDB()

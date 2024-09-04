@@ -13,6 +13,8 @@ export default class UserController {
         this.userService = new UserService
         this.encription = new Encription
     }
+
+    //////////////////////////////////////////////////////////////POST
     async createUser(body: IUser):Promise<IResponse>{
         try{
             const exist = await this.userService.getUser(body.ficha)
@@ -32,5 +34,29 @@ export default class UserController {
             return {ok: false, message: 'Error ocurred', response: err, code: 500}
         }
     }
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////GET
+async getUsers():Promise<IResponse>{
+    try{
+        const response = await this.userService.getUsers()
+        return {ok: true, message: 'Successfull', response: response, code: 201}
+    }catch(err){
+        logger.error(`[UserController/getUsers] ${err}`)
+        return {ok: false,  message: 'Error ocurred', response: err, code: 500}
+    }
+}
 
+async getUserById(idUser: number):Promise<IResponse>{
+    try{
+        const response = await this.userService.getUserById(idUser)
+        if(!response){
+            return {ok: false, message:'incorrect data', response: null, code: 201}
+        }
+        return {ok: true, message:'Successfull', response: response, code: 201}
+    }catch(err){
+        logger.error(`[UserController/getUsersById] ${err}`)
+        return {ok: false,  message: 'Error ocurred', response: err, code: 500}
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////
 }

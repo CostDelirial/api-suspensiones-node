@@ -16,4 +16,21 @@ userRouter.post('/',checkToken.autetication, async(req: Request, res: Response )
     }
 })
 
+userRouter.get('/', checkToken.autetication, async(req:Request, res: Response) => {
+    try{
+        const response = await userController.getUsers()
+        return res.status(response.code).json(response)
+    }catch(err: any){
+        return res.status(err.code ? err.code : 500)
+    }
+})
+userRouter.get('/:idUser',checkToken.autetication, async(req: Request, res: Response) => {
+    try{
+        const idUser = req.params.idUser
+        const response = await userController.getUserById(parseInt(idUser))
+        return res.status(response.code).json(response)
+    }catch(err: any ){
+        return res.status(err.code ? err.code : 500).json(err)
+    }
+})
 export default userRouter
