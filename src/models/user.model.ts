@@ -25,4 +25,10 @@ export class User extends Model<User>{
         allowNull:false
     })
     password!: string
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
+    tipo!: number;
 }
