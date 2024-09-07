@@ -31,9 +31,4 @@ export default class UserModel extends Model<UserModel> {
         allowNull: false
     })
     role!:string;
-    @Column({
-        type: DataType.STRING,
-        allowNull: false
-    })
-    password!: string
 }
