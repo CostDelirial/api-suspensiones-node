@@ -3,7 +3,7 @@ import { CatMotivoSuspension } from './motivoSuspencion.model'; // Importa el mo
 
 @Table({
     tableName: 'cat_logistica',
-    timestamps: true // Puedes ajustar esto según necesites
+    timestamps: true 
 })
 export class CatLogistica extends Model {
     

@@ -1,9 +1,9 @@
 import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { CatLogistica } from './logistica.model'; // Importa el modelo relacionado
+import { CatLogistica } from './logistica.model'; 
 
 @Table({
     tableName: 'cat_motivoSuspension',
-    timestamps: true // Ajusta esto según tus necesidades
+    timestamps: true 
 })
 export class CatMotivoSuspension extends Model {
     
@@ -40,7 +40,6 @@ export class CatMotivoSuspension extends Model {
     @BelongsTo(() => CatLogistica) // Relación muchos-a-uno con cat_logistica
     logistica!: CatLogistica;
 
-    // Si tienes otras relaciones como "suspension", podrías agregar aquí HasMany o belongsToMany, según corresponda.
     // @HasMany(() => Suspension)
     // suspension!: Suspension[];
 }

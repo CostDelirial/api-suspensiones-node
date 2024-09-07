@@ -2,7 +2,7 @@ import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement } from 'seque
 
 @Table({
     tableName: 'cat_personalCC',
-    timestamps: true // Ajusta si necesitas createdAt/updatedAt automáticamente
+    timestamps: true 
 })
 export class CatPersonalCC extends Model {
 

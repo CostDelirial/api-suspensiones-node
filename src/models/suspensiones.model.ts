@@ -5,7 +5,7 @@ import { CatPersonalCC } from './personal.model';
 
 @Table({
     tableName: 'suspensiones',
-    timestamps: true // Agrega createdAt y updatedAt automáticamente
+    timestamps: true 
 })
 export class Suspensiones extends Model {
     
