@@ -6,7 +6,7 @@ const userRouter = Router()
 const userController = new UserController()
 const checkToken = new Authenticate()
 
-userRouter.post('/',checkToken.autetication, async(req: Request, res: Response ) => {
+userRouter.post('/', async(req: Request, res: Response ) => {
     try{
         const isAdmin= req.body.user_client
         const body = req.body

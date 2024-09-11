@@ -18,10 +18,10 @@ export default class UserController {
     async createUser(body: IUser, isAdmin: any):Promise<IResponse>{
         try{
             
-            if(isAdmin.role !== 'ADMIN'){
-                return {ok: false, message: 'You are not Administrator', response: null, code: 500}
+            // if(isAdmin.role !== 'ADMIN'){
+            //     return {ok: false, message: 'You are not Administrator', response: null, code: 500}
 
-            }
+            // }
             const exist = await this.userService.getUser(body.ficha)
             if(exist){
                 return {ok: false, message: 'Ficha al readi exist', response: null, code: 500}
