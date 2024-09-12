@@ -4,7 +4,7 @@ import {  Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull }
     tableName: 'cat_ducto',
     timestamps: true // Incluye createdAt y updatedAt automáticamente
 })
-export class CatDucto extends Model {
+export default class DuctosModel extends Model<DuctosModel> {
     
     @PrimaryKey
     @AutoIncrement
@@ -22,14 +22,14 @@ export class CatDucto extends Model {
             }
         }
     })
-    nombre!: string;
+    name!: string;
 
     @AllowNull(false)
     @Column({
-        type: DataType.INTEGER,
-        defaultValue: 1 // 1: Activado, 2: Desactivado
+        type: DataType.BOOLEAN,
+        defaultValue: true // true: Activado, false: Desactivado
     })
-    estatus!: number;
+    status!: boolean;
 
     // Relación a la tabla `suspensiones`)
     // @HasMany(() => Suspension)

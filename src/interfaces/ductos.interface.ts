@@ -1,7 +1,7 @@
-export interface ICatDucto {
+export default interface IDuctos {
     id: number;
-    nombre: string;
-    estatus: number;
+    name: string;
+    status: boolean;
         
     // suspensiones?: any[];
 }
