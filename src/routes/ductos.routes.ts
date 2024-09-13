@@ -16,4 +16,15 @@ ductosRouter.post('/', async(req: Request, res: Response ) => {
         return res.status(err.code ? err.code : 500)
     }
 })
+ductosRouter.get('/read', async(req: Request, res: Response ) => {
+    try{
+        console.log("Entro 1")
+        const isAdmin= true //req.body.user_client
+        const body = req.body
+        const response = await ductosController.getDuctos()
+        return res.status(response.code).json(response)
+    }catch(err: any){
+        return res.status(err.code ? err.code : 500)
+    }
+})
 export default ductosRouter

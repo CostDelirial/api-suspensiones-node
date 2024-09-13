@@ -39,4 +39,15 @@ export default class DuctosController {
             return {ok: false, message: 'Error ocurred', response: err, code: 500}
         }
     }
+
+    async getDuctos():Promise<IResponse>{
+        try{
+            console.log("Entro 2")
+            const response = await this.ductosService.getDuctos()
+            return {ok: true, message: 'Successfull', response: response, code: 201}
+        }catch(err){
+            logger.error(`[DuctosController/getDuctos] ${err}`)
+            return {ok: false,  message: 'Error ocurred', response: err, code: 500}
+        }
+    }
 }

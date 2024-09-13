@@ -10,8 +10,7 @@ export default class DuctosService {
 
     async createDuctos(body: any){
         try{
-            await this.db.connectDB()
-            console.log("Aqui si llega")
+            await this.db.connectDB()            
             const newDuctos = await DuctosModel.create( body)
             return newDuctos
         }catch(err){
@@ -23,17 +22,19 @@ export default class DuctosService {
     }
 
 
-    /**async getDuctos(){
+    async getDuctos(){
         try{
             await this.db.connectDB()
-            const ductos = await DuctosModel.findAll()
+            console.log("Entro 3")
+            const ductos = await DuctosModel.findAll()     
+            console.log("findAll Ductos: ", ductos)      
             return ductos
         }catch(err){    
             throw err
         }finally{
             await this.db.disconnectDB()
         }
-    }*/
+    }
 
     /**async getDuctosById(idDuctos: number){
         try{
