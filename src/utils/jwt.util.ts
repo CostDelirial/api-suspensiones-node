@@ -11,8 +11,11 @@ export default class JWTUtil {
 
     //Valida el tiempo de vida del token o si el token es correcto y se decodifica
     async decodeToken(token: string) {
+        console.log("token a decodificar: ", token)
+         console.log("secret: ",this.secret)
         try {
             const decoded =  jwt.verify(token, this.secret, { algorithms: ['HS512'] })
+            console.log("token decodificado: ", decoded)
             return decoded;
         } catch (error) {
             return false

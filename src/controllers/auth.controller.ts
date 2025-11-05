@@ -1,45 +1,55 @@
-import logger from '../../lib/logger'
-import UserService from '../services/user.service'
-import Encription from '../utils/encryption.util';
-import JWTUtil from '../utils/jwt.util';
-export default class AuthControll{
-    private userService: UserService
-    private encryption: Encription
-    private jwtUtil: JWTUtil
-    constructor(){
-        this.userService = new UserService()
-        this.encryption = new Encription()
-        this.jwtUtil = new JWTUtil()
-    }
-    async Login(ficha: number, password: string){
-        try{
-            
-            const user = await this.userService.getUser(ficha)
-            if(!user){
-                return {ok: false, message: 'Ficha or Password incorrect', response: null, code: 400}
-            }
-            if(user.status !== "ACTIVE"){
-                return {ok: false, message: 'you are INACTIVE', response: null, code: 301}
-            }
-            const truePassword = await this.encryption.decryptPassword(user, password)
-            if(!truePassword){
-                return ({ ok: false, message: " password incorrect", response: null, code: 400 });
+import { Request, Response } from "express";
+import logger from "../../lib/logger";
+import { ResponseHelper } from "../helpers/response.helper";
+import { AuthService } from "../services/auth.service";
+import JWTUtil from "../utils/jwt.util";
 
+export default class AuthController {
+    async register(req: Request, res: Response): Promise<any> {
+        try {
+            if (!req.body) {
+                return ResponseHelper.error(res, 'Please provide user data', null, 400);
             }
 
-            const frontUser = {
-                name: user.name,
-                ficha: user.ficha,
-                role: user.role,
-                status: user.status
+            const user = await AuthService.register(req.body);
+
+            if (!user?.ok) {
+                return ResponseHelper.error(res, user.message, user?.createdUser, user?.code);
             }
 
-            const genToken = await this.jwtUtil.generateToken(frontUser)
-
-            return {ok: true, message: 'Successfull', response: frontUser, code: 200, token:  genToken }
-        }catch(err){
-            logger.error(`[AuthControll/login] ${err}`)
-            return {ok: false, message: 'Error ocurred',response: err, code: 500}
+            return ResponseHelper.success(res, 'User created successfully', user, 201);
+        } catch (error) {
+            logger.error(`[Error/controller/register]: ${error}`);
+            return ResponseHelper.error(res, 'Internal Server Error', null, 500);
         }
     }
+
+    async login(req: Request, res: Response): Promise<any> {
+        try {
+            const { ficha, password } = req.body
+            const result = await AuthService.login(ficha, password)
+            return ResponseHelper.success(res, 'Login successfulli', result, 201)
+        } catch (error) {
+            logger.error(`[Error/auth/controller/login]: ${error}`)
+            return ResponseHelper.error(res, 'Error ocurred', null, 500)
+        }
+    }
+
+    async auth(req: Request, res: Response): Promise<any> {
+        try {
+            const token = req.headers.authorization;
+            if(!token){
+                console.log("No se recibio token.")
+                return ResponseHelper.error(res, 'No se recibio token.', null, 500)
+            }
+            const jwt = new JWTUtil();
+            const decoded = await jwt.decodeToken(token as string) as any;
+            const result = await AuthService.LoginRefresh(decoded.user)            
+            return ResponseHelper.success(res, 'Auth refresh successfulli', result.token, 201)
+        } catch (error) {
+            logger.error(`[Error/auth/controller/login]: ${error}`)
+            return ResponseHelper.error(res, 'Error ocurred', null, 500)
+        }
+    }
+
 }

@@ -1,18 +1,11 @@
-import AuthControll from "../controllers/auth.controller"
-import { Router, Request, Response } from "express"
-
+import { Router } from "express";
+import AuthController from "../controllers/auth.controller";
 
 const authRouter = Router()
-const authController = new AuthControll
+const autController = new AuthController()
 
-authRouter.post('/', async(req: Request, res: Response) => {
-    try{
-        const { ficha, password } = req.body
-        const response = await authController.Login(ficha, password)
-        return res.status(response.code).json(response)
-    }catch(err: any){
-        return res.status(err.code ? err.code : 500)
-    }
-})
 
+authRouter.post('/register',autController.register.bind(autController))
+authRouter.post('/login',autController.login.bind(autController))
+authRouter.get('/',autController.auth.bind(autController))
 export default authRouter

@@ -1,36 +1,39 @@
-import PostgresConn from "../../lib/postgres"
+import {pool} from "../../config/db"
 import UserModel from "../models/user.model"
 
 
 export default class UserService {
-    private db: PostgresConn
-    constructor(){
-        this.db = PostgresConn.getInstance()
-    }
-
+    
     async createUser(body: any){
         try{
-            await this.db.connectDB()
             const newUser = await UserModel.create( body)
             return newUser
         }catch(err){
             
             throw err
         }finally{
-            await this.db.disconnectDB()
         }
     }
 
-    async getUser(ficha: number){
+    async getUserByFicha(ficha: number){
         try{
-            await this.db.connectDB()
             const existUser = await UserModel.findOne({where:{ficha: ficha}})
             return existUser
         }catch(err){
             
             throw err
         }finally{
-            await this.db.disconnectDB()
+        }
+    }
+
+    async getUserById(ficha: number){
+        try{
+            const existUser = await UserModel.findOne({where:{ficha: ficha}})
+            return existUser
+        }catch(err){
+            
+            throw err
+        }finally{
         }
     }
 }
