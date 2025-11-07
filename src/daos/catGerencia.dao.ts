@@ -4,11 +4,11 @@ import  ICatGerencia  from '../interfaces/catGerencia.interface';
 export class CatGerenciaDAO {
   static async create(body: ICatGerencia): Promise<any> {
     const query = `
-      INSERT INTO cat_gerencia (nombre, fecha_creacion, usuario_creacion, status, siglas)
+      INSERT INTO cat_gerencia (name, fecha_creacion, usuario_creacion, status, siglas)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
-    const values = [body.nombre, new Date(), body.usuarioCreacion, 'active', body.siglas];
+    const values = [body.nombre, new Date(), body.usuarioCreacion, 'true', body.siglas];
     console.log("values: ", values)
     const result = await pool.query(query, values);
     return result.rows[0];

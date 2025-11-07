@@ -6,5 +6,6 @@ export default interface IcatSubgerencia {
     usuarioCreacion: string; // Usuario que creó el registro
     usuarioModificacion?: string; // Usuario que modificó el registro (opcional)
     estatus: boolean;       // Indica si el registro está activo o inactivo
-    id: number; 
+    id: number;
+    uuidGerencia: string; 
 }

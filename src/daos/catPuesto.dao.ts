@@ -3,7 +3,7 @@ import ICatPuesto from '../interfaces/catPuesto.interface';
 
 export class CatPuestoDAO {
   static async findAll(): Promise<ICatPuesto[]> {
-    const result = await pool.query('SELECT * FROM cat_puesto WHERE status = $1', ['active']);
+    const result = await pool.query('SELECT * FROM cat_puesto WHERE status = $1', ['true']);
     return result.rows;
   }
 
@@ -21,10 +21,10 @@ export class CatPuestoDAO {
   static async create(puesto: ICatPuesto): Promise<ICatPuesto> {
     console.log("DATOS del puesto: ",puesto)
     const query = `
-      INSERT INTO cat_puesto (nombre, nivel, usuario_creacion, status)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO cat_puesto (nombre, nivel, usuario_creacion, status, fecha_creacion)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *`;
-    const values = [puesto.nombre, puesto.nivel, puesto.usuarioCreacion, puesto.estatus || 'true'];
+    const values = [puesto.nombre, puesto.nivel, puesto.usuarioCreacion, puesto.estatus || 'true', new Date()];
     console.log("values: ", values)
     const result = await pool.query(query, values);
     console.log("result: ", result)

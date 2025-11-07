@@ -4,11 +4,11 @@ import  IcatSubgerencia  from '../interfaces/catSubgerencia.interface';
 export class CatSubgerenciaDAO {
   static async create(body: IcatSubgerencia): Promise<any> {
     const query = `
-      INSERT INTO cat_subgerencia (nombre, siglas, fecha_creacion, usuario_creacion, status)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO cat_subgerencia (name, siglas, fecha_creacion, usuario_creacion, status, uuidgerencia)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;
     `;
-    const values = [body.nombre, body.siglas, new Date(), body.usuarioCreacion, 'active'];
+    const values = [body.nombre, body.siglas, new Date(), body.usuarioCreacion, 'true', body.uuidGerencia];
     const result = await pool.query(query, values);
     return result.rows[0];
   }

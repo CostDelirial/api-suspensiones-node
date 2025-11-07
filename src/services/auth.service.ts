@@ -75,7 +75,7 @@ export class AuthService {
 
   static async login(ficha: number, password: string) {
     try {
-      console.log("Va a revisar si existe la ficha")
+      console.log("Va a revisar si existe la ficha: ", ficha)
       const existing = await AuthDAO.findByFicha(ficha)
       if (!existing) {
         return { ok: false, message: 'No existe esa ficha registrada: ' + ficha, code: 301 }

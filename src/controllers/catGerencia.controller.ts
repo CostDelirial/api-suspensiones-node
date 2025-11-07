@@ -14,10 +14,12 @@ export default class CatGerenciaController {
       }
       
       console.log("Sacar el nombre de quien la va a crear: ")
-      const token = req.headers.authorization;
-      const jwt = new JWTUtil();
-      const decoded = await jwt.decodeToken(token as string) as any;
-      req.body.usuarioCreacion = decoded.user.ficha
+      /*const token = req.headers.authorization;
+            const jwt = new JWTUtil();
+            const decoded = await jwt.decodeToken(token as string) as any;
+            req.body.usuarioCreacion = decoded.user.ficha*/
+            req.body.usuarioCreacion = '666'
+      
       console.log("Lo va a crear: ", req.body.usuarioCreacion)
 
       const response = await CatGerenciaService.createCatGerencia(req.body);

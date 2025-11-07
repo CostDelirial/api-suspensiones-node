@@ -1,30 +1,30 @@
-import { CatPuestoDAO } from '../daos/catPuesto.dao';
-import ICatPuesto from '../interfaces/catPuesto.interface';
+import { CatRoleDAO } from '../daos/catRole.dao';
+import ICatRole from '../interfaces/catRole.interface';
 import logger from '../../lib/logger';
 
-export class CatPuestoService {
-  static async createCatPuesto(body: ICatPuesto) {
+export class CatRoleService {
+  static async createCatRole(body: ICatRole) {
     try {
       console.log("Va a buscar si existe lo que intenta ingresar: ", body)
-      const exists = await CatPuestoDAO.findByNivelName(body.nivel, body.nombre);
+      const exists = await CatRoleDAO.findByName(body.nombre);
       console.log("exists: ", exists)
       if (exists) {
         return {
           ok: false,
-          message: `El nivel ${body.nivel} ya está registrado.`,
+          message: `El nivel ${body.nombre} ya está registrado.`,
           code: 409
         };
       }
 console.log("pasoo: ", body)
-      const newPuesto = await CatPuestoDAO.create(body);
+      const newRole = await CatRoleDAO.create(body);
       return {
         ok: true,
         message: 'Creado correctamente',
-        response: newPuesto,
+        response: newRole,
         code: 201
       };
     } catch (error) {
-      logger.error(`[service/catPuesto/create]: ${error}`);
+      logger.error(`[service/catRole/create]: ${error}`);
       return {
         ok: false,
         message: 'Error interno al crear',
@@ -33,10 +33,10 @@ console.log("pasoo: ", body)
     }
   }
 
-  static async getCatPuestos() {
+  static async getCatRoles() {
     try {
       console.log("Va a leer todos los puestos")
-      const puestos = await CatPuestoDAO.findAll();
+      const puestos = await CatRoleDAO.findAll();
       return {
         ok: true,
         message: 'Lista obtenida',
@@ -44,7 +44,7 @@ console.log("pasoo: ", body)
         code: 200
       };
     } catch (error) {
-      logger.error(`[service/catPuesto/list]: ${error}`);
+      logger.error(`[service/catRole/list]: ${error}`);
       return {
         ok: false,
         message: 'Error al obtener puestos',
@@ -53,9 +53,9 @@ console.log("pasoo: ", body)
     }
   }
 
-  static async updatePuesto(puesto: ICatPuesto) {
+  static async updateRole(puesto: ICatRole) {
     try {
-      const updated = await CatPuestoDAO.update(puesto);
+      const updated = await CatRoleDAO.update(puesto);
       return {
         ok: true,
         message: 'Actualizado correctamente',
@@ -63,7 +63,7 @@ console.log("pasoo: ", body)
         code: 200
       };
     } catch (error) {
-      logger.error(`[service/catPuesto/update]: ${error}`);
+      logger.error(`[service/catRole/update]: ${error}`);
       return {
         ok: false,
         message: 'Error al actualizar',
@@ -72,17 +72,17 @@ console.log("pasoo: ", body)
     }
   }
 
-  static async getCatPuesto(id: string) {
+  static async getCatRole(id: string) {
     try {
-      const puesto = await CatPuestoDAO.findById(id);
+      const puesto = await CatRoleDAO.findById(id);
       return {
         ok: true,
-        message: 'Puesto encontrado',
+        message: 'Role encontrado',
         response: puesto,
         code: 200
       };
     } catch (error) {
-      logger.error(`[service/catPuesto/findById]: ${error}`);
+      logger.error(`[service/catRole/findById]: ${error}`);
       return {
         ok: false,
         message: 'Error al buscar el puesto',

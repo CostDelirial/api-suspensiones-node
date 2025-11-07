@@ -5,6 +5,7 @@ import catGerenciaRouter from './catGerencia.router'
 import catSubgerenciaRouter from './catSubgerencia.router'
 import catSuperintendenciaRouter from './catSuperintendencia.router'
 import catPuestoRouter from './catPuesto.router'
+import catRoleRouter from './catRole.router'
 
 const routers = express()
 
@@ -16,5 +17,6 @@ routers.use('/catGerencia', catGerenciaRouter)
 routers.use('/catSubgerencia', catSubgerenciaRouter)
 routers.use('/catSuperintendencia', catSuperintendenciaRouter)
 routers.use('/catPuesto', catPuestoRouter)
+routers.use('/catRole', catRoleRouter)
 
 export default routers

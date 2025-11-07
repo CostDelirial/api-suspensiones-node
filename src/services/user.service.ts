@@ -1,11 +1,12 @@
 import {pool} from "../../config/db"
-import UserModel from "../models/user.model"
+import {UserModel} from "../models/user.model"
 
 
 export default class UserService {
     
     async createUser(body: any){
         try{
+            console.log("Body: ", body)
             const newUser = await UserModel.create( body)
             return newUser
         }catch(err){

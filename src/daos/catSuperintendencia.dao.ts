@@ -4,11 +4,11 @@ import  IcatSuperintendencia  from '../interfaces/catSuperintendencia.interface'
 export class CatSuperintendenciaDAO {
   static async create(body: IcatSuperintendencia): Promise<any> {
     const query = `
-      INSERT INTO cat_superintendencia (nombre, fecha_creacion, usuario_creacion, status)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO cat_superintendencia (name, fecha_creacion, usuario_creacion, status, uuidsubgerencia, siglas)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;
     `;
-    const values = [body.nombre, new Date(), body.usuarioCreacion, 'active'];
+    const values = [body.nombre, new Date(), body.usuarioCreacion, 'true', body.uuidSubgerencia, body.siglas];
     const result = await pool.query(query, values);
     return result.rows[0];
   }

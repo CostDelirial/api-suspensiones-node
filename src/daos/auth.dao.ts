@@ -19,7 +19,8 @@ export class AuthDAO {
 
     static async findByFicha(ficha: number){
         try{
-            const query = `SELECT * FROM users WHERE ficha=$1`
+            console.log("findByFicha: ", ficha)
+            const query = `SELECT * FROM "user" WHERE ficha=$1`
             const values = [ficha]
             const result = await pool.query(query,values)
             console.log("resultado con la ficha "+ficha+" : "+ result.rows[0])

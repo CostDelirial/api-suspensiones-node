@@ -7,4 +7,5 @@ export default interface IcatSuperintendencia {
     usuarioModificacion?: string; // Usuario que modificó el registro (opcional)
     estatus: boolean;       // Indica si el registro está activo o inactivo.
     id: number; 
+    uuidSubgerencia: string; 
 }

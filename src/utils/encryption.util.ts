@@ -6,13 +6,13 @@ import  IUser  from '../interfaces/user.interface'
 
 export default class EncryptioClass {
 
-    //private  secret = process.env.JWT_SECRET || 'defaultSecret'
-    private secret = 'a-string-secret-at-least-256-bits-long'
+    private  secret = process.env.JWT_SECRET || 'defaultSecret'
+    //private secret = 'a-string-secret-at-least-256-bits-long'
 
 
     generateToken(user: any){
-        console.log("SECRET: "+this.secret)
-        return jwt.sign({ user }, this.secret, { expiresIn: '1h'})
+        console.log("1.- SECRET: "+this.secret)
+        return jwt.sign({ user }, this.secret, { expiresIn: '1h', algorithm: "HS512"})
     }
 
     verifyToken(token: string):any{

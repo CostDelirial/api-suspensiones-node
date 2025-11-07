@@ -19,11 +19,12 @@ export default class UserController {
             if (exist) {
                 return { ok: false, message: 'Ficha al readi exist', response: null, code: 500 }
             }
-
+            console.log("La ficha no existe actualmente.")
 
             const hashedPassword = await this.encription.hashPassword(body.password)
             body.password = hashedPassword
-
+            
+            
             const response = await this.userService.createUser(body)
 
             return { ok: true, message: 'Successfull', response: response, code: 200 }
