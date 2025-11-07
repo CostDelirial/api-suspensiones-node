@@ -38,13 +38,19 @@ export default class AuthController {
     async auth(req: Request, res: Response): Promise<any> {
         try {
             const token = req.headers.authorization;
-            if(!token){
+            if (!token) {
                 return ResponseHelper.error(res, 'No se recibio token.', null, 500)
             }
             const jwt = new JWTUtil();
             const decoded = await jwt.decodeToken(token as string) as any;
-            const result = await AuthService.LoginRefresh(decoded.user)   
-            return ResponseHelper.success(res, 'Auth refresh successfulli', result, 201)
+            const result = await AuthService.LoginRefresh(decoded.user)
+            return res.status(201).json({
+                ok: true,
+                message: 'Auth refresh successfully',
+                user: result.user,
+                token: result.token,
+                code: 201
+            });
         } catch (error) {
             logger.error(`[Error/auth/controller/login]: ${error}`)
             return ResponseHelper.error(res, 'Error ocurred', null, 500)
