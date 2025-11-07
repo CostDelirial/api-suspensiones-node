@@ -88,7 +88,7 @@ export class AuthService {
         //uuid: existing.uuid,
         name: existing.name,
         //role: existing.role,
-        //ficha: existing.ficha,
+        ficha: existing.ficha,
         status: existing.status,
         //id: existing.id
       }
