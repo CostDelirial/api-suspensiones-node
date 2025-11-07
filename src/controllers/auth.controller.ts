@@ -28,7 +28,13 @@ export default class AuthController {
         try {
             const { ficha, password } = req.body
             const result = await AuthService.login(ficha, password)
-            return ResponseHelper.success(res, 'Login successfulli', result, 201)
+            return res.status(201).json({
+                ok: true,
+                message: 'Auth login successfully',
+                user: result.user,
+                token: result.token,
+                code: 201
+            });
         } catch (error) {
             logger.error(`[Error/auth/controller/login]: ${error}`)
             return ResponseHelper.error(res, 'Error ocurred', null, 500)

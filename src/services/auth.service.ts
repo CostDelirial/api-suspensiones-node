@@ -85,15 +85,15 @@ export class AuthService {
       }
       console.log("existing: ", existing)
       const user = {
-        uuid: existing.uuid,
+        //uuid: existing.uuid,
         name: existing.name,
-        role: existing.role,
-        ficha: existing.ficha,
+        //role: existing.role,
+        //ficha: existing.ficha,
         status: existing.status,
-        id: existing.id
+        //id: existing.id
       }
       const token = this.encryptClass.generateToken(user)
-      return { ok: true, message: 'successfull', token }
+      return { ok: true, message: 'successfull', token, user }
     } catch (error) {
       logger.error(`[Error/auth/login]: ${error}`)
       return { ok: false, message: 'Internal server error' }
