@@ -19,8 +19,7 @@ export default class CatRoleController {
             const decoded = await jwt.decodeToken(cleanToken as string) as any;
             console.log("decode: ", decoded)
             req.body.usuarioCreacion = decoded.user.ficha
-            console.log("Lo va a crear: ", req.body.usuarioCreacion)
-
+           
             const response = await CatRoleService.createCatRole(req.body);
 
             if (!response) {

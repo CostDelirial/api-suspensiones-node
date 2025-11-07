@@ -17,7 +17,7 @@ export default class UserController {
         try {
             const exist = await this.userService.getUserByFicha(body.ficha)
             if (exist) {
-                return { ok: false, message: 'Ficha al readi exist', response: null, code: 500 }
+                return { ok: false, message: 'Ficha ya existe', response: null, code: 500 }
             }
             console.log("La ficha no existe actualmente.")
 

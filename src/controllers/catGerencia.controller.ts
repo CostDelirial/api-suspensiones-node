@@ -13,12 +13,12 @@ export default class CatGerenciaController {
         return ResponseHelper.error(res, 'No data received', null, 400);
       }
       
-      console.log("Sacar el nombre de quien la va a crear: ")
-      /*const token = req.headers.authorization;
-            const jwt = new JWTUtil();
-            const decoded = await jwt.decodeToken(token as string) as any;
-            req.body.usuarioCreacion = decoded.user.ficha*/
-            req.body.usuarioCreacion = '666'
+      const token = req.headers.authorization;
+                  const jwt = new JWTUtil();
+                  const cleanToken = token!.replace(/^Bearer\s+/i, "");
+                  const decoded = await jwt.decodeToken(cleanToken as string) as any;
+                  console.log("decode: ", decoded)
+                  req.body.usuarioCreacion = decoded.user.ficha
       
       console.log("Lo va a crear: ", req.body.usuarioCreacion)
 
