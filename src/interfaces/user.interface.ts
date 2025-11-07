@@ -1,5 +1,5 @@
 export default interface IUser{
-    nombre: string
+    name: string
     ficha: number
     password: string
     status: string
@@ -14,7 +14,7 @@ export default interface IUser{
     usuarioCreacion: string          // Usuario que creó el registro
     fechaActualizacion: Date,        // Fecha de la última actualización
     usuarioActualizacion: string,     // Usuario que lo modificó
-    id?: number;
+    uuid?: string;
     email: string,
     phone: number
 }

@@ -75,19 +75,17 @@ export class AuthService {
 
   static async login(ficha: number, password: string) {
     try {
-      console.log("Va a revisar si existe la ficha: ", ficha)
       const existing = await AuthDAO.findByFicha(ficha)
       if (!existing) {
         return { ok: false, message: 'No existe esa ficha registrada: ' + ficha, code: 301 }
       }
-      console.log("Va a revisar el password")
       const passValid = await this.encryptClass.verifyPassword(password, existing.password)
-      console.log("passValid", passValid)
       if (!passValid) {
         return { ok: false, message: 'Invalid data', code: 301 }
       }
-
+      console.log("existing: ", existing)
       const user = {
+        uuid: existing.uuid,
         name: existing.name,
         role: existing.role,
         ficha: existing.ficha,
@@ -95,7 +93,7 @@ export class AuthService {
         id: existing.id
       }
       const token = this.encryptClass.generateToken(user)
-      return { ok: true, message: 'successfull', token, user }
+      return { ok: true, message: 'successfull', token }
     } catch (error) {
       logger.error(`[Error/auth/login]: ${error}`)
       return { ok: false, message: 'Internal server error' }
@@ -104,13 +102,15 @@ export class AuthService {
 
   static async LoginRefresh(user: IUser) {
     try {
+      console.log("-> USER REFRESH: ", user)
       const frontUser = {
-        id: user.id,
-        nombre: user.nombre,
+        uuid: user.uuid,
+        name: user.name,
         ficha: user.ficha,
         role: user.role,
         status: user.status
       }
+      console.log("frontUser: ",frontUser)
       const jwt = new JWTUtil();
       const tokenGen = await jwt.generateToken(frontUser)
       return { ok: true, message: 'Successfull', response: null, code: 200, user: frontUser, token: tokenGen }
