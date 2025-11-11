@@ -77,13 +77,12 @@ export class AuthService {
     try {
       const existing = await AuthDAO.findByFicha(ficha)
       if (!existing) {
-        return { ok: false, message: 'No existe esa ficha registrada: ' + ficha, code: 301 }
+        return { ok: false, message: 'User not foud: ' + ficha, code: 404 }
       }
       const passValid = await this.encryptClass.verifyPassword(password, existing.password)
       if (!passValid) {
-        return { ok: false, message: 'Invalid data', code: 301 }
+        return { ok: false, message: 'Invalid password', code: 401 }
       }
-      console.log("existing: ", existing)
       const user = {
         //uuid: existing.uuid,
         name: existing.name,

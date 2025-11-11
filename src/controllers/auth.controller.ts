@@ -26,18 +26,44 @@ export default class AuthController {
 
     async login(req: Request, res: Response): Promise<any> {
         try {
-            const { ficha, password } = req.body
-            const result = await AuthService.login(ficha, password)
-            return res.status(201).json({
+            const { ficha, password } = req.body;
+
+            if (!ficha || !password) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Falta ficha o contraseña',
+                    code: 400
+                });
+            }
+
+            const result = await AuthService.login(ficha, password);
+            console.log("Auth controller result:", result);
+
+            if (!result.ok) {
+                let statusCode = 400;
+                if (result.message?.toLowerCase().includes('not found') || result.code === 404) {
+                    statusCode = 404;
+                } else if (result.message?.toLowerCase().includes('password') || result.code === 401) {
+                    statusCode = 401;
+                }
+                return res.status(statusCode).json({
+                    ok: false,
+                    message: result.message || 'Credenciales inválidas',
+                    code: statusCode
+                });
+            }
+
+            return res.status(200).json({
                 ok: true,
                 message: 'Auth login successfully',
                 user: result.user,
                 token: result.token,
-                code: 201
+                code: 200
             });
+
         } catch (error) {
-            logger.error(`[Error/auth/controller/login]: ${error}`)
-            return ResponseHelper.error(res, 'Error ocurred', null, 500)
+            logger.error(`[Error/auth/controller/login]: ${error}`);
+            return ResponseHelper.error(res, 'Error interno del servidor', null, 500);
         }
     }
 
