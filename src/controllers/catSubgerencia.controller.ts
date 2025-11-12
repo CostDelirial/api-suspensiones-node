@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import logger from "../../lib/logger";
 import { ResponseHelper } from "../helpers/response.helper";
 import { CatSubgerenciaService } from "../services/catSubgerencia.service";
-import  UserService  from "../services/user.service";
+import UserService from "../services/user.service";
 import JWTUtil from "../utils/jwt.util";
 
 export default class CatSubgerenciaController {
@@ -13,29 +13,29 @@ export default class CatSubgerenciaController {
         return ResponseHelper.error(res, 'No data received', null, 400);
       }
 
-     const token = req.headers.authorization;
-                 const jwt = new JWTUtil();
-                 const cleanToken = token!.replace(/^Bearer\s+/i, "");
-                 const decoded = await jwt.decodeToken(cleanToken as string) as any;
-                 console.log("decode: ", decoded)
-                 req.body.usuarioCreacion = decoded.user.ficha
-                 
+      const token = req.headers.authorization;
+      const jwt = new JWTUtil();
+      const cleanToken = token!.replace(/^Bearer\s+/i, "");
+      const decoded = await jwt.decodeToken(cleanToken as string) as any;
+      console.log("decode: ", decoded)
+      req.body.usuarioCreacion = decoded.user.ficha
+
       const response = await CatSubgerenciaService.createCatSubgerencia(req.body);
       if (!response.ok) {
-                return res.status(400).json({
-                    ok: false,
-                    message: response.message,
-                    response: null,
-                    code: 400
-                }
-                )
-            }
-            return res.status(201).json({
-                ok: true,
-                message: 'Creado correctamente.',
-                response: response.response,
-                code: 201
-            });
+        return res.status(400).json({
+          ok: false,
+          message: response.message,
+          response: null,
+          code: 400
+        }
+        )
+      }
+      return res.status(201).json({
+        ok: true,
+        message: 'Creado correctamente.',
+        response: response.response,
+        code: 201
+      });
     } catch (error) {
       logger.error(`[controller/catSubgerencia/create]: ${error}`);
       return ResponseHelper.error(res, 'Error al crear gerencia', null, 500);
@@ -45,7 +45,12 @@ export default class CatSubgerenciaController {
   async getCatSubgerencias(req: Request, res: Response): Promise<any> {
     try {
       const response = await CatSubgerenciaService.getCatSubgerencias();
-      return ResponseHelper.success(res, 'Subgerencias obtenidas correctamente', response.response, response.code);
+      return res.status(200).json({
+        ok: true,
+        message: 'Datos obtenidos correctamente.',
+        response: response.response,
+        code: 200
+      });
     } catch (error) {
       logger.error(`[controller/catSubgerencia/getAll]: ${error}`);
       return ResponseHelper.error(res, 'Error al obtener subgerencias', null, 500);
@@ -76,7 +81,7 @@ export default class CatSubgerenciaController {
       gerencia.estatus = gerencia.estatus === false ? true : false;
       gerencia.fechaModificacion = new Date();
       if (infoUser != null)
-      gerencia.usuarioModificacion = infoUser.ficha.toString(); // Asegura string
+        gerencia.usuarioModificacion = infoUser.ficha.toString(); // Asegura string
 
       const updateResult = await CatSubgerenciaService.update(gerencia);
 

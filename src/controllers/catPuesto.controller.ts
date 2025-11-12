@@ -37,7 +37,7 @@ export default class CatPuestoController {
                 response: response.response,
                 code: 201
             });
-            
+
         } catch (error) {
             logger.error(`[Error/controller/createCatPuesto]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
@@ -47,7 +47,12 @@ export default class CatPuestoController {
     async getCatPuestos(req: Request, res: Response): Promise<any> {
         try {
             const response = await CatPuestoService.getCatPuestos();
-            return ResponseHelper.success(res, 'Fetched puestos successfully', response, 200);
+            return res.status(200).json({
+                ok: true,
+                message: 'Datos obtenidos correctamente.',
+                response: response.response,
+                code: 200
+            });
         } catch (error) {
             logger.error(`[Error/controller/getCatPuestos]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);

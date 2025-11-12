@@ -3,7 +3,7 @@ import logger from "../../lib/logger";
 import { ResponseHelper } from "../helpers/response.helper";
 import { CatDuctoService } from "../services/catDucto.service";
 import JWTUtil from "../utils/jwt.util";
-import  UserService  from "../services/user.service";
+import UserService from "../services/user.service";
 
 export default class CatDuctoController {
 
@@ -19,10 +19,10 @@ export default class CatDuctoController {
             const decoded = await jwt.decodeToken(cleanToken as string) as any;
             console.log("decode: ", decoded)
             req.body.usuarioCreacion = decoded.user.ficha
-           
+
             const response = await CatDuctoService.createCatDucto(req.body);
 
-           if (!response.ok) {
+            if (!response.ok) {
                 return res.status(400).json({
                     ok: false,
                     message: response.message,
@@ -47,7 +47,12 @@ export default class CatDuctoController {
     async getCatDuctos(req: Request, res: Response): Promise<any> {
         try {
             const response = await CatDuctoService.getCatDuctos();
-            return ResponseHelper.success(res, 'Fetched puestos successfully', response, 200);
+            return res.status(200).json({
+                ok: true,
+                message: 'Datos obtenidos correctamente.',
+                response: response.response,
+                code: 200
+            });
         } catch (error) {
             logger.error(`[Error/controller/getCatDuctos]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
@@ -73,7 +78,7 @@ export default class CatDuctoController {
             infoDucto.status = infoDucto.status === 'inactive' ? 'active' : 'inactive';
             infoDucto.fechaActualizacion = new Date();
             if (infoUser != null)
-            infoDucto.usuarioActualizacion = infoUser.ficha;
+                infoDucto.usuarioActualizacion = infoUser.ficha;
 
             const updated = await CatDuctoService.updateDucto(infoDucto);
 

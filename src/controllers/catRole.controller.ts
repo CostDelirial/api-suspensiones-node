@@ -3,7 +3,7 @@ import logger from "../../lib/logger";
 import { ResponseHelper } from "../helpers/response.helper";
 import { CatRoleService } from "../services/catRole.service";
 import JWTUtil from "../utils/jwt.util";
-import  UserService  from "../services/user.service";
+import UserService from "../services/user.service";
 
 export default class CatRoleController {
 
@@ -19,7 +19,7 @@ export default class CatRoleController {
             const decoded = await jwt.decodeToken(cleanToken as string) as any;
             console.log("decode: ", decoded)
             req.body.usuarioCreacion = decoded.user.ficha
-           
+
             const response = await CatRoleService.createCatRole(req.body);
 
             if (!response.ok) {
@@ -37,7 +37,7 @@ export default class CatRoleController {
                 response: response.response,
                 code: 201
             });
-            
+
         } catch (error) {
             logger.error(`[Error/controller/createCatRole]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
@@ -47,7 +47,12 @@ export default class CatRoleController {
     async getCatRoles(req: Request, res: Response): Promise<any> {
         try {
             const response = await CatRoleService.getCatRoles();
-            return ResponseHelper.success(res, 'Fetched puestos successfully', response, 200);
+            return res.status(200).json({
+                ok: true,
+                message: 'Datos obtenidos correctamente.',
+                response: response.response,
+                code: 200
+            });
         } catch (error) {
             logger.error(`[Error/controller/getCatRoles]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
@@ -73,7 +78,7 @@ export default class CatRoleController {
             infoRole.status = infoRole.status === 'inactive' ? 'active' : 'inactive';
             infoRole.fechaActualizacion = new Date();
             if (infoUser != null)
-            infoRole.usuarioActualizacion = infoUser.ficha;
+                infoRole.usuarioActualizacion = infoUser.ficha;
 
             const updated = await CatRoleService.updateRole(infoRole);
 

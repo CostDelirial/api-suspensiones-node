@@ -3,7 +3,7 @@ import logger from "../../lib/logger";
 import { ResponseHelper } from "../helpers/response.helper";
 import { CatMotivoService } from "../services/catMotivo.service";
 import JWTUtil from "../utils/jwt.util";
-import  UserService  from "../services/user.service";
+import UserService from "../services/user.service";
 
 export default class CatMotivoController {
 
@@ -19,7 +19,7 @@ export default class CatMotivoController {
             const decoded = await jwt.decodeToken(cleanToken as string) as any;
             console.log("decode: ", decoded)
             req.body.usuarioCreacion = decoded.user.ficha
-           
+
             const response = await CatMotivoService.createCatMotivo(req.body);
 
             if (!response.ok) {
@@ -46,7 +46,12 @@ export default class CatMotivoController {
     async getCatMotivos(req: Request, res: Response): Promise<any> {
         try {
             const response = await CatMotivoService.getCatMotivos();
-            return ResponseHelper.success(res, 'Fetched puestos successfully', response, 200);
+            return res.status(200).json({
+                ok: true,
+                message: 'Datos obtenidos correctamente.',
+                response: response.response,
+                code: 200
+            });
         } catch (error) {
             logger.error(`[Error/controller/getCatMotivos]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
@@ -72,7 +77,7 @@ export default class CatMotivoController {
             infoMotivo.status = infoMotivo.status === 'inactive' ? 'active' : 'inactive';
             infoMotivo.fechaActualizacion = new Date();
             if (infoUser != null)
-            infoMotivo.usuarioActualizacion = infoUser.ficha;
+                infoMotivo.usuarioActualizacion = infoUser.ficha;
 
             const updated = await CatMotivoService.updateMotivo(infoMotivo);
 
