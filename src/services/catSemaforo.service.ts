@@ -15,7 +15,28 @@ export class CatSemaforoService {
           code: 409
         };
       }
-      console.log("pasoo: ", body)
+
+      //GUARDAR EL COLOR EN CSS
+      const colorParts = body.color.split(',');
+      const colorMap: Record<string, string> = {};
+      colorParts.forEach((part) => {
+        const [key, value] = part.split(':').map(p => p.trim());
+        if (key && value) colorMap[key] = value;
+      });
+      const colorCSS = `
+        border-radius: 100%;
+        width: 0;
+        height: 0;
+        color: #fff;
+        border-right: 25px solid ${colorMap['color-right'] || '#000'};
+        border-top: 25px solid ${colorMap['color-top'] || '#000'};
+        border-left: 25px solid ${colorMap['color-left'] || '#000'};
+        border-bottom: 25px solid ${colorMap['color-bottom'] || '#000'};
+      `.replace(/\s+/g, ' ').trim();
+      body.color = colorCSS;
+      console.log("body completo: ", body)
+
+
       const newSemaforo = await CatSemaforoDAO.create(body);
       return {
         ok: true,
