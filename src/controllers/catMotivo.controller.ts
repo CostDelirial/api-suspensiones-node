@@ -22,11 +22,21 @@ export default class CatMotivoController {
            
             const response = await CatMotivoService.createCatMotivo(req.body);
 
-            if (!response) {
-                return ResponseHelper.error(res, 'Could not create motivo', null, 400);
+            if (!response.ok) {
+                return res.status(400).json({
+                    ok: false,
+                    message: response.message,
+                    response: null,
+                    code: 400
+                }
+                )
             }
-
-            return ResponseHelper.success(res, 'Motivo created successfully', response, 200);
+            return res.status(201).json({
+                ok: true,
+                message: 'Creado correctamente.',
+                response: response.response,
+                code: 201
+            });
         } catch (error) {
             logger.error(`[Error/controller/createCatMotivo]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
