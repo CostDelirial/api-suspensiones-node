@@ -22,11 +22,22 @@ export default class CatSemaforoController {
            
             const response = await CatSemaforoService.createCatSemaforo(req.body);
 
-            if (!response) {
-                return ResponseHelper.error(res, 'Could not create semaforo', null, 400);
+            if (!response.ok) {
+                return res.status(400).json({
+                    ok: false,
+                    message: response.message,
+                    response: null,
+                    code: 400
+                }
+                )
             }
+            return res.status(201).json({
+                ok: true,
+                message: 'Creado correctamente.',
+                response: response.response,
+                code: 201
+            });
 
-            return ResponseHelper.success(res, 'Semaforo created successfully', response, 200);
         } catch (error) {
             logger.error(`[Error/controller/createCatSemaforo]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);

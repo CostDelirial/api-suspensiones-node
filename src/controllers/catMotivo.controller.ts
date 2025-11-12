@@ -23,7 +23,7 @@ export default class CatMotivoController {
             const response = await CatMotivoService.createCatMotivo(req.body);
 
             if (!response) {
-                return ResponseHelper.error(res, 'Could not create puesto', null, 400);
+                return ResponseHelper.error(res, 'Could not create motivo', null, 400);
             }
 
             return ResponseHelper.success(res, 'Motivo created successfully', response, 200);

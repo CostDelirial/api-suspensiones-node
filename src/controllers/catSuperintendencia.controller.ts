@@ -20,7 +20,21 @@ export default class CatSuperintendenciaController {
                   req.body.usuarioCreacion = decoded.user.ficha
       
       const response = await CatSuperintendenciaService.createCatSuperintendencia(req.body);
-      return ResponseHelper.success(res, 'Superintendencia creada correctamente', response.response, response.code);
+      if (!response.ok) {
+                return res.status(400).json({
+                    ok: false,
+                    message: response.message,
+                    response: null,
+                    code: 400
+                }
+                )
+            }
+            return res.status(201).json({
+                ok: true,
+                message: 'Creado correctamente.',
+                response: response.response,
+                code: 201
+            });
     } catch (error) {
       logger.error(`[controller/catSuperintendencia/create]: ${error}`);
       return ResponseHelper.error(res, 'Error al crear gerencia', null, 500);

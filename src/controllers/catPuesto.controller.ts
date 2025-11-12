@@ -3,7 +3,7 @@ import logger from "../../lib/logger";
 import { ResponseHelper } from "../helpers/response.helper";
 import { CatPuestoService } from "../services/catPuesto.service";
 import JWTUtil from "../utils/jwt.util";
-import  UserService  from "../services/user.service";
+import UserService from "../services/user.service";
 
 export default class CatPuestoController {
 
@@ -14,19 +14,30 @@ export default class CatPuestoController {
                 return ResponseHelper.error(res, 'No data received', null, 400);
             }
             const token = req.headers.authorization;
-                        const jwt = new JWTUtil();
-                        const cleanToken = token!.replace(/^Bearer\s+/i, "");
-                        const decoded = await jwt.decodeToken(cleanToken as string) as any;
-                        console.log("decode: ", decoded)
-                        req.body.usuarioCreacion = decoded.user.ficha
+            const jwt = new JWTUtil();
+            const cleanToken = token!.replace(/^Bearer\s+/i, "");
+            const decoded = await jwt.decodeToken(cleanToken as string) as any;
+            console.log("decode: ", decoded)
+            req.body.usuarioCreacion = decoded.user.ficha
 
             const response = await CatPuestoService.createCatPuesto(req.body);
 
-            if (!response) {
-                return ResponseHelper.error(res, 'Could not create puesto', null, 400);
+            if (!response.ok) {
+                return res.status(400).json({
+                    ok: false,
+                    message: response.message,
+                    response: null,
+                    code: 400
+                }
+                )
             }
-
-            return ResponseHelper.success(res, 'Puesto created successfully', response, 200);
+            return res.status(201).json({
+                ok: true,
+                message: 'Creado correctamente el puesto: ' + response.response?.nombre,
+                response: response.response,
+                code: 201
+            });
+            
         } catch (error) {
             logger.error(`[Error/controller/createCatPuesto]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
@@ -62,7 +73,7 @@ export default class CatPuestoController {
             infoPuesto.status = infoPuesto.status === 'inactive' ? 'active' : 'inactive';
             infoPuesto.fechaActualizacion = new Date();
             if (infoUser != null)
-            infoPuesto.usuarioActualizacion = infoUser.ficha;
+                infoPuesto.usuarioActualizacion = infoUser.ficha;
 
             const updated = await CatPuestoService.updatePuesto(infoPuesto);
 

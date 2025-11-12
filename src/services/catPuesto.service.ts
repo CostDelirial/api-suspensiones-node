@@ -12,7 +12,7 @@ export class CatPuestoService {
         return {
           ok: false,
           message: `El nivel ${body.nivel} ya está registrado.`,
-          code: 409
+          code: 400
         };
       }
 console.log("pasoo: ", body)

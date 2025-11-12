@@ -22,11 +22,22 @@ export default class CatRoleController {
            
             const response = await CatRoleService.createCatRole(req.body);
 
-            if (!response) {
-                return ResponseHelper.error(res, 'Could not create puesto', null, 400);
+            if (!response.ok) {
+                return res.status(400).json({
+                    ok: false,
+                    message: response.message,
+                    response: null,
+                    code: 400
+                }
+                )
             }
-
-            return ResponseHelper.success(res, 'Role created successfully', response, 200);
+            return res.status(201).json({
+                ok: true,
+                message: 'Creado correctamente el rol: ' + response.response?.nombre,
+                response: response.response,
+                code: 201
+            });
+            
         } catch (error) {
             logger.error(`[Error/controller/createCatRole]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
