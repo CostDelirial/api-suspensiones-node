@@ -3,12 +3,11 @@ import ICatDucto from '../interfaces/catDucto.interface';
 
 export class CatDuctoDAO {
   static async findAll(): Promise<ICatDucto[]> {
-    const result = await pool.query('SELECT * FROM cat_ducto WHERE status = $1', ['true']);
+    const result = await pool.query('SELECT uuid, nombre, status FROM cat_ducto ');
     return result.rows;
   }
 
   static async findByName(nombre: string): Promise<ICatDucto | null> {
-    console.log("va a ejecutar el query")
     const result = await pool.query('SELECT * FROM cat_ducto WHERE nombre = $1 LIMIT 1', [nombre]);
     return result.rows[0] || null;
   }
@@ -19,7 +18,6 @@ export class CatDuctoDAO {
   }
 
   static async create(ducto: ICatDucto): Promise<ICatDucto> {
-    console.log("DATOS del ducto: ",ducto)
     const query = `
       INSERT INTO cat_ducto (nombre, usuario_creacion, status, fecha_creacion)
       VALUES ($1, $2, $3, $4)

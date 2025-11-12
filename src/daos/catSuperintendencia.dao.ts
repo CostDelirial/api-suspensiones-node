@@ -35,7 +35,7 @@ export class CatSuperintendenciaDAO {
   }
 
   static async findAll(): Promise<IcatSuperintendencia[]> {
-    const query = 'SELECT * FROM cat_superintendencia';
+    const query = 'SELECT uuid, name, status FROM cat_superintendencia';
     const result = await pool.query(query);
     return result.rows;
   }

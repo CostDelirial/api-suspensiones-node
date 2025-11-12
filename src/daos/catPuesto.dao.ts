@@ -3,7 +3,7 @@ import ICatPuesto from '../interfaces/catPuesto.interface';
 
 export class CatPuestoDAO {
   static async findAll(): Promise<ICatPuesto[]> {
-    const result = await pool.query('SELECT * FROM cat_puesto WHERE status = $1', ['true']);
+    const result = await pool.query('SELECT uuid, nombre, nivel, status FROM cat_puesto');
     return result.rows;
   }
 
@@ -19,7 +19,6 @@ export class CatPuestoDAO {
   }
 
   static async create(puesto: ICatPuesto): Promise<ICatPuesto> {
-    console.log("DATOS del puesto: ",puesto)
     const query = `
       INSERT INTO cat_puesto (nombre, nivel, usuario_creacion, status, fecha_creacion)
       VALUES ($1, $2, $3, $4, $5)

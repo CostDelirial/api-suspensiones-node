@@ -35,7 +35,7 @@ export class CatSubgerenciaDAO {
   }
 
   static async findAll(): Promise<IcatSubgerencia[]> {
-    const query = 'SELECT * FROM cat_subgerencia';
+    const query = 'SELECT uuid, name, status FROM cat_subgerencia';
     const result = await pool.query(query);
     return result.rows;
   }

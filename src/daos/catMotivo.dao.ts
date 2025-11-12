@@ -3,7 +3,7 @@ import ICatMotivo from '../interfaces/catMotivo.interface';
 
 export class CatMotivoDAO {
   static async findAll(): Promise<ICatMotivo[]> {
-    const result = await pool.query('SELECT * FROM cat_motivo WHERE status = $1', ['true']);
+    const result = await pool.query('SELECT uuid, nombre, logistico, status FROM cat_motivo');
     return result.rows;
   }
 

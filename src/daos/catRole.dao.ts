@@ -3,7 +3,7 @@ import ICatRole from '../interfaces/catRole.interface';
 
 export class CatRoleDAO {
   static async findAll(): Promise<ICatRole[]> {
-    const result = await pool.query('SELECT * FROM cat_role WHERE status = $1', ['true']);
+    const result = await pool.query('SELECT uuid, nombre, status FROM cat_role ');
     return result.rows;
   }
 

@@ -3,7 +3,7 @@ import ICatSemaforo from '../interfaces/catSemaforo.interface';
 
 export class CatSemaforoDAO {
   static async findAll(): Promise<ICatSemaforo[]> {
-    const result = await pool.query('SELECT * FROM cat_semaforo WHERE status = $1', ['true']);
+    const result = await pool.query('SELECT uuid, nombre, color, status FROM cat_semaforo ');
     return result.rows;
   }
 
