@@ -9,11 +9,13 @@ import catRoleRouter from './catRole.router'
 import catSemaforoRouter from './catSemaforo.router'
 import catDuctoRouter from './catDucto.router'
 import catMotivoRouter from './catMotivo.router'
+import tableroRouter from './tablero.router'
 
 const routers = express()
 
 routers.use('/api/user',userRouter)
 routers.use('/auth', authRouter)
+routers.use('/tablero', tableroRouter)
 
 // catalogos
 routers.use('/catGerencia', catGerenciaRouter)
