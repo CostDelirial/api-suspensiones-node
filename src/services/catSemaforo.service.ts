@@ -11,28 +11,31 @@ export class CatSemaforoService {
       if (exists) {
         return {
           ok: false,
-          message: `El nivel ${body.nombre} ya está registrado.`,
+          message: `El ${body.nombre} ya está registrado.`,
           code: 409
         };
       }
 
       //GUARDAR EL COLOR EN CSS
-      const colorParts = body.color.split(',');
-      const colorMap: Record<string, string> = {};
-      colorParts.forEach((part) => {
-        const [key, value] = part.split(':').map(p => p.trim());
-        if (key && value) colorMap[key] = value;
-      });
+      if (!body.color1 || !body.color2) {
+        return {
+          ok: false,
+          message: `color1 y color2 son obligatorios.`,
+          code: 400
+        };
+      }
+
       const colorCSS = `
-        border-radius: 100%;
-        width: 0;
-        height: 0;
-        color: #fff;
-        border-right: 25px solid ${colorMap['color1'] || '#000'};
-        border-top: 25px solid ${colorMap['color1'] || '#000'};
-        border-left: 25px solid ${colorMap['color2'] || '#000'};
-        border-bottom: 25px solid ${colorMap['color2'] || '#000'};
-      `.replace(/\s+/g, ' ').trim();
+      border-radius: 100%;
+      width: 0;
+      height: 0;
+      color: #fff;
+      border-right: 25px solid ${body.color1};
+      border-top: 25px solid ${body.color1};
+      border-left: 25px solid ${body.color2};
+      border-bottom: 25px solid ${body.color2};
+    `.replace(/\s+/g, ' ').trim();
+
       body.color = colorCSS;
       console.log("body completo: ", body)
 
