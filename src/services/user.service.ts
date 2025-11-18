@@ -37,4 +37,25 @@ export default class UserService {
         }finally{
         }
     }
+
+    async getUsers() {
+        try {
+          console.log("Va a leer todos los usuarios")
+          const usuarios = await UserModel.findAll();
+          return {
+            ok: true,
+            message: 'Lista obtenida',
+            response: usuarios,
+            code: 200
+          };
+        } catch (error) {
+          return {
+            ok: false,
+            message: 'Error al obtener usuarios',
+            code: 500
+          };
+        }
+      }
+    
+
 }

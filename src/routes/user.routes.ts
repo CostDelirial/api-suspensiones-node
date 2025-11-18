@@ -16,5 +16,14 @@ userRouter.post('/',async(req: Request, res: Response ) => {
         return res.status(err.code ? err.code : 500)
     }
 })
+userRouter.get('/',async(req: Request, res: Response ) => {
+    try{
+        const body = req.body
+        const response = await userController.getUsers()
+        return res.status(response.code).json(response)
+    }catch(err: any){
+        return res.status(err.code ? err.code : 500)
+    }
+})
 
 export default userRouter

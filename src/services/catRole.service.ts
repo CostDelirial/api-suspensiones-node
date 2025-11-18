@@ -15,7 +15,7 @@ export class CatRoleService {
           code: 409
         };
       }
-console.log("pasoo: ", body)
+      console.log("pasoo: ", body)
       const newRole = await CatRoleDAO.create(body);
       return {
         ok: true,

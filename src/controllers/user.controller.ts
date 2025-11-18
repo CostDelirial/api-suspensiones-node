@@ -34,4 +34,14 @@ export default class UserController {
         }
     }
 
+    async getUsers(): Promise<any> {
+            try {
+                const response = await this.userService.getUsers();
+                return { ok: true, message: 'Successfull', response: response, code: 200 }
+            } catch (error) {
+                logger.error(`[Error/controller/getCatPuestos]: ${error}`);
+                return { ok: false, message: 'Error ocurred', response: error, code: 500 }
+            }
+        }
+
 }
