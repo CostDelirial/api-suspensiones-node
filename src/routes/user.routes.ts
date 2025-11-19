@@ -6,24 +6,8 @@ const userRouter = Router()
 const userController = new UserController()
 const checkToken = new Authenticate()
 
-// userRouter.post('/',checkToken.autetication, async(req: Request, res: Response ) => {
-userRouter.post('/',async(req: Request, res: Response ) => {
-    try{
-        const body = req.body
-        const response = await userController.createUser(body)
-        return res.status(response.code).json(response)
-    }catch(err: any){
-        return res.status(err.code ? err.code : 500)
-    }
-})
-userRouter.get('/',async(req: Request, res: Response ) => {
-    try{
-        const body = req.body
-        const response = await userController.getUsers()
-        return res.status(response.code).json(response)
-    }catch(err: any){
-        return res.status(err.code ? err.code : 500)
-    }
-})
+
+userRouter.post('/', userController.createUser.bind(userController))
+userRouter.get('/', userController.getUsers.bind(userController))
 
 export default userRouter

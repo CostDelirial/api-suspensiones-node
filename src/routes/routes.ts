@@ -13,7 +13,7 @@ import tableroRouter from './tablero.router'
 
 const routers = express()
 
-routers.use('/api/user',userRouter)
+routers.use('/user',userRouter)
 routers.use('/auth', authRouter)
 routers.use('/tablero', tableroRouter)
 
