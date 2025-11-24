@@ -3,7 +3,9 @@ import IUser from '../interfaces/user.interface';
 
 export class UserDAO {
   static async findAll(): Promise<IUser[]> {
-    const result = await pool.query('SELECT uuid, name, role, nivel, status FROM "user"');
+    const result = await pool.query('SELECT u.uuid, u.name, r.nombre AS rol, p.nombre AS nivel, u.status '+ 
+      'FROM "user" u LEFT JOIN cat_role r ON u.role = r.uuid '+
+      'LEFT JOIN cat_puesto p ON u.nivel = p.uuid;');
     return result.rows;
   }
 
