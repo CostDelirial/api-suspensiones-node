@@ -26,7 +26,7 @@ export class UserDAO {
       INSERT INTO "user" (name, ficha, usuariocreacion, status, fechacreacion, password, role, nivel, salt, gerencia, email)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *`;
-    const values = [user.name, user.ficha, user.usuarioCreacion, user.status || 'true', new Date(), 
+    const values = [user.name, user.ficha, user.usuarioCreacion, true , new Date(), 
       user.password, user.role, user.nivel, user.salt, user.gerencia, user.email];
     const result = await pool.query(query, values);
     console.log("result: ", result)
