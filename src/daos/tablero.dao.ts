@@ -64,7 +64,7 @@ static async getTableroPrincipal() {
           m.logistico,
           s.nombre AS semaforo,
           s.color AS color,
-          to_char(t.fecha_usuario, 'DD-MM-YYYY HH24:MI') AS fecha_usuario,
+          to_char(t.fecha_usuario, 'DD/MM/YYYY HH24:MI') AS fecha_usuario,
           t.status,
           t.fecha_creacion,
           t.usuario_creacion
