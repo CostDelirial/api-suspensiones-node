@@ -9,19 +9,8 @@ export default class CatPuestoController {
 
     async createCatPuesto(req: Request, res: Response): Promise<any> {
         try {
-            console.log("body enviado: ", req.body)
-            if (!req.body) {
-                return ResponseHelper.error(res, 'No data received', null, 400);
-            }
-            const token = req.headers.authorization;
-            const jwt = new JWTUtil();
-            const cleanToken = token!.replace(/^Bearer\s+/i, "");
-            const decoded = await jwt.decodeToken(cleanToken as string) as any;
-            console.log("decode: ", decoded)
-            req.body.usuarioCreacion = decoded.user.ficha
-
+            req.body.usuarioCreacion = req.body.user_client.user.ficha
             const response = await CatPuestoService.createCatPuesto(req.body);
-
             if (!response.ok) {
                 return res.status(400).json({
                     ok: false,

@@ -6,7 +6,6 @@ export default class JWTUtil {
     private  secret = process.env.JWT_SECRET || 'defaultSecret'
 
     async generateToken(payload: any){
-         console.log("1.- secret: ",this.secret)
         const token = jwt.sign(payload, this.secret, { expiresIn: config.get('jwt.accessTokenLife') , algorithm: 'HS512'});
         return token
     }
@@ -14,11 +13,8 @@ export default class JWTUtil {
     //Valida el tiempo de vida del token o si el token es correcto y se decodifica
     async decodeToken(token: string) {
         const cleanToken = token!.replace(/^Bearer\s+/i, "");
-        console.log("token a decodificar: ", cleanToken)
-         console.log("2.- secret: ",this.secret)
         try {
             const decoded =  jwt.verify(cleanToken, this.secret, { algorithms: ['HS512'] })
-            console.log("token decodificado: ", decoded)
             return decoded;
         } catch (error) {
             console.log("error: ", error)
@@ -34,4 +30,5 @@ export default class JWTUtil {
         const { exp } = payload;
         return exp > currentDate;
     }
+    
 }

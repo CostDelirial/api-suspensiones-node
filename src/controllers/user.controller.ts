@@ -23,7 +23,6 @@ export default class UserController {
             const jwt = new JWTUtil();
             const cleanToken = token!.replace(/^Bearer\s+/i, "");
             const decoded = await jwt.decodeToken(cleanToken as string) as any;
-            console.log("decode: ", decoded)
             req.body.usuarioCreacion = decoded.user.ficha
 
             const response = await UserService.createUser(req.body);

@@ -17,6 +17,8 @@ export class TableroDAO {
 
   // Crear nuevo registro
   static async create(tablero: ITablero) {
+// Revisar el formato de la fecha
+console.log("datos para guardar en el tablero: ", tablero)
     const query = `
       INSERT INTO tableroControl 
       (uuid_ducto, uuid_motivo, fecha_usuario, usuario_creacion, status, fecha_creacion)
@@ -62,7 +64,7 @@ static async getTableroPrincipal() {
           m.logistico,
           s.nombre AS semaforo,
           s.color AS color,
-          t.fecha_usuario,
+          to_char(t.fecha_usuario, 'DD-MM-YYYY HH24:MI') AS fecha_usuario,
           t.status,
           t.fecha_creacion,
           t.usuario_creacion

@@ -1,11 +1,12 @@
 import CatSubgerenciaController from '../controllers/catSubgerencia.controller';
+import AuthMiddleware from '../middlewares/authenticate.middleware';
 import { Router, Request, Response } from "express";
 
 const catSubgerenciaRouter = Router()
 const catSubgerenciaController = new CatSubgerenciaController()
 
-catSubgerenciaRouter.post('/', catSubgerenciaController.createCatSubgerencia.bind(catSubgerenciaController))
-catSubgerenciaRouter.get('/', catSubgerenciaController.getCatSubgerencias.bind(catSubgerenciaController))
+catSubgerenciaRouter.post('/', AuthMiddleware.autetication, catSubgerenciaController.createCatSubgerencia.bind(catSubgerenciaController))
+catSubgerenciaRouter.get('/', AuthMiddleware.autetication, catSubgerenciaController.getCatSubgerencias.bind(catSubgerenciaController))
 catSubgerenciaRouter.post('/delete', catSubgerenciaController.delete.bind(catSubgerenciaController))
 
 export default catSubgerenciaRouter;

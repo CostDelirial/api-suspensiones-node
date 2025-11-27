@@ -4,12 +4,12 @@ import JWTUtil from "../utils/jwt.util";
 
 export default class Authenticate {
     
-    async autetication(req: Request, res: Response, next: NextFunction){
+    static async autetication(req: Request, res: Response, next: NextFunction){
         try {
             if(!req.headers.authorization){
                 const response: IResponse = {
                     ok: false,
-                    message: "La peticion no tiene la cabecera de autenticacion",
+                    message: "La peticion no tiene la cabecera de autenticacion. Mensaje enviado desde middleware.",
                     response: null,
                     code: 403,
                 };
@@ -21,7 +21,7 @@ export default class Authenticate {
             if(!decodeUser){
                 const response: IResponse = {
                     ok: false,
-                    message: "Token invalido",
+                    message: "Token invalido. Mensaje enviado desde middleware.",
                     response: null,
                     code: 403,
                   };
@@ -32,7 +32,7 @@ export default class Authenticate {
             next();
         } catch (error) {
             console.log(error)
-            return res.status(403).send({ message: "Token invalido" });
+            return res.status(403).send({ message: "Token invalido. Mensaje enviado desde middleware 2." });
         }
     }
 }

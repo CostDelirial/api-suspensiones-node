@@ -1,11 +1,12 @@
 import CatSemaforoController from '../controllers/catSemaforo.controller';
+import AuthMiddleware from '../middlewares/authenticate.middleware';
 import { Router, Request, Response } from "express";
 
 const catSemaforoRouter = Router()
 const catSemaforoController = new CatSemaforoController()
 
-catSemaforoRouter.post('/', catSemaforoController.createCatSemaforo.bind(catSemaforoController))
-catSemaforoRouter.get('/', catSemaforoController.getCatSemaforos.bind(catSemaforoController))
+catSemaforoRouter.post('/', AuthMiddleware.autetication, catSemaforoController.createCatSemaforo.bind(catSemaforoController))
+catSemaforoRouter.get('/', AuthMiddleware.autetication, catSemaforoController.getCatSemaforos.bind(catSemaforoController))
 catSemaforoRouter.post('/delete', catSemaforoController.delete.bind(catSemaforoController))
 
 export default catSemaforoRouter;
