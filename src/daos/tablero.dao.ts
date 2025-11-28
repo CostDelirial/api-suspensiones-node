@@ -22,7 +22,7 @@ console.log("datos para guardar en el tablero: ", tablero)
     const query = `
       INSERT INTO tableroControl 
       (uuid_ducto, uuid_motivo, fecha_usuario, usuario_creacion, status, fecha_creacion)
-      VALUES ($1, $2, $3, $4, $5, NOW())
+      VALUES ($1, $2, TO_TIMESTAMP($3, 'DD/MM/YYYY HH24:MI'), $4, $5, NOW())
       RETURNING *;
     `;
     const values = [
