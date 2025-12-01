@@ -16,7 +16,7 @@ export class TableroService {
       if (lastRecord && lastRecord.uuid_motivo === body.uuid_motivo) {
         return {
           ok: false,
-          message: `El ducto ya tiene el mismo motivo en el último registro (${body.uuid_motivo}). Debe ser diferente.`,
+          message: `El ducto ya tiene el mismo motivo en el último registro.`,
           code: 409,
         };
       }
