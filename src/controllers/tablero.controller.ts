@@ -22,7 +22,7 @@ export default class TableroController {
             }
             return res.status(201).json({
                 ok: true,
-                message: 'Creado correctamente el tablero: ' + response.response?.nombre,
+                message: 'Creado correctamente el tablero',
                 response: response.response,
                 code: 201
             });
