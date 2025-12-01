@@ -25,7 +25,7 @@ export class TableroService {
       const newTablero = await TableroDAO.create(body);
       return {
         ok: true,
-        message: "Registro creado correctamente",
+        message: "Registro creado correctamente.",
         response: newTablero,
         code: 201,
       };
