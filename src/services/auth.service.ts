@@ -89,6 +89,7 @@ export class AuthService {
         //role: existing.role,
         ficha: existing.ficha,
         status: existing.status,
+        role: existing.role,
         //id: existing.id
       }
       const token = this.encryptClass.generateToken(user)
