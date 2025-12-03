@@ -82,9 +82,25 @@ static async getTableroPrincipal() {
   // Obtiene el último registro por ducto
   static async getHistoricoByDucto(uuid_ducto: string) {
     const query = `
-      SELECT * FROM tableroControl
-      WHERE uuid_ducto = $1
-      ORDER BY fecha_usuario DESC
+     SELECT  
+          t.uuid,
+          t.uuid_ducto,
+          d.nombre AS ducto,
+          t.uuid_motivo,
+          m.nombre AS motivo,
+          m.logistico,
+          s.nombre AS semaforo,
+          s.color AS color,
+          to_char(t.fecha_usuario, 'DD/MM/YYYY HH24:MI') AS fecha_usuario,
+          t.status,
+          t.fecha_creacion,
+          t.usuario_creacion
+      FROM tableroControl t
+      INNER JOIN cat_ducto d ON t.uuid_ducto = d.uuid
+      INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
+      INNER JOIN cat_semaforo s ON m.uuid_semaforo = s.uuid
+      WHERE t.uuid_ducto = $1
+      ORDER BY t.fecha_usuario DESC;
     `;
     const result = await pool.query(query, [uuid_ducto]);
     return result.rows || null;
