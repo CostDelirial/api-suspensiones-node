@@ -57,4 +57,24 @@ export default class TableroController {
             return ResponseHelper.error(res, "Error al obtener tablero principal", null, 500);
         }
     }
+
+    async historicoByDucto(req: Request, res: Response): Promise<Response> {
+        try {
+            console.log("req.params: ",req.params)
+           const {uuid_ducto} = req.params;
+           console.log("uuid_ducto: ",uuid_ducto)
+            if(uuid_ducto==null){
+                console.log("sin ducto")
+                return ResponseHelper.error(res, "sin ducto", null, 500);
+            }
+            const result = await TableroService.historicoByDucto(uuid_ducto);
+            if (!result.ok) {
+                return ResponseHelper.error(res, result.message, null, result.code);
+            }
+            return ResponseHelper.success(res, result.message, result.response, result.code);
+        } catch (error) {
+            logger.error(`[controller/tablero/historicoByDucto]: ${error}`);
+            return ResponseHelper.error(res, "Error al obtener historicoByDucto", null, 500);
+        }
+    }
 }

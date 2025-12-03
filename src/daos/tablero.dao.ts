@@ -78,4 +78,16 @@ static async getTableroPrincipal() {
     const result = await pool.query(query);
     return result.rows;
   }
+
+  // Obtiene el último registro por ducto
+  static async getHistoricoByDucto(uuid_ducto: string) {
+    const query = `
+      SELECT * FROM tableroControl
+      WHERE uuid_ducto = $1
+      ORDER BY fecha_usuario DESC
+    `;
+    const result = await pool.query(query, [uuid_ducto]);
+    return result.rows || null;
+  }
+
 }

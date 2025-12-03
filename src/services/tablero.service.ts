@@ -17,7 +17,7 @@ export class TableroService {
         return {
           ok: false,
           message: `El ducto ya tiene el mismo motivo en el último registro.`,
-          code: 409,
+          code: 500,
         };
       }
 
@@ -73,6 +73,26 @@ export class TableroService {
       return {
         ok: false,
         message: "Error interno al obtener tablero principal",
+        code: 500,
+      };
+    }
+  }
+
+  static async historicoByDucto(uuid_ducto: string) {
+    try {
+      const data = await TableroDAO.getHistoricoByDucto(uuid_ducto);
+
+      return {
+        ok: true,
+        message: "Historico obtenido correctamente",
+        response: data,
+        code: 200,
+      };
+    } catch (error) {
+      logger.error(`[service/tablero/historico]: ${error}`);
+      return {
+        ok: false,
+        message: "Error interno al obtener historico.",
         code: 500,
       };
     }
