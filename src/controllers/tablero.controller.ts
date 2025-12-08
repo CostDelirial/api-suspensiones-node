@@ -44,18 +44,20 @@ export default class TableroController {
         }
     }
 
-    async tableroPrincipal(req: Request, res: Response): Promise<Response> {
-        try {
-            const result = await TableroService.tableroPrincipal();
-            if (!result.ok) {
-                return ResponseHelper.error(res, result.message, null, result.code);
+    async tableroPrincipal(req: Request, res: Response): Promise<any> {
+            try {
+                const response = await TableroService.tableroPrincipal();
+                return res.status(200).json({
+                    ok: true,
+                    message: 'Datos obtenidos correctamente.',
+                    response: response.response,
+                    code: 200
+                });
+            } catch (error) {
+                logger.error(`[Error/controller/tableroPrincipal]: ${error}`);
+                return ResponseHelper.error(res, 'Internal Server Error', null, 500);
             }
-            return ResponseHelper.success(res, result.message, result.response, result.code);
-        } catch (error) {
-            logger.error(`[controller/tablero/tableroPrincipal]: ${error}`);
-            return ResponseHelper.error(res, "Error al obtener tablero principal", null, 500);
         }
-    }
 
     async historicoByDucto(req: Request, res: Response): Promise<Response> {
         try {
@@ -67,14 +69,16 @@ export default class TableroController {
                 return ResponseHelper.error(res, "sin ducto", null, 500);
             }
             const result = await TableroService.historicoByDucto(uuid_ducto);
-            if (!result.ok) {
-                return ResponseHelper.error(res, result.message, null, result.code);
+            return res.status(200).json({
+                    ok: true,
+                    message: 'Datos obtenidos correctamente.',
+                    response: result.response,
+                    code: 200
+                });
+            } catch (error) {
+                logger.error(`[Error/controller/tableroPrincipal]: ${error}`);
+                return ResponseHelper.error(res, 'Internal Server Error', null, 500);
             }
-            return ResponseHelper.success(res, result.message, result.response, result.code);
-        } catch (error) {
-            logger.error(`[controller/tablero/historicoByDucto]: ${error}`);
-            return ResponseHelper.error(res, "Error al obtener historicoByDucto", null, 500);
-        }
     }
 
     async create(req: Request, res: Response) {
