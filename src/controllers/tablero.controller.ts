@@ -46,7 +46,6 @@ export default class TableroController {
 
     async tableroPrincipal(req: Request, res: Response): Promise<Response> {
         try {
-            console.log("ficha del decoded: ", req.body.user_client.user.ficha)
             const result = await TableroService.tableroPrincipal();
             if (!result.ok) {
                 return ResponseHelper.error(res, result.message, null, result.code);
