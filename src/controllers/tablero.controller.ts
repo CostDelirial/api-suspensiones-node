@@ -76,7 +76,7 @@ export default class TableroController {
                     code: 200
                 });
             } catch (error) {
-                logger.error(`[Error/controller/tableroPrincipal]: ${error}`);
+                logger.error(`[Error/controller/historicoByDucto]: ${error}`);
                 return ResponseHelper.error(res, 'Internal Server Error', null, 500);
             }
     }
