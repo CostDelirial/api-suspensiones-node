@@ -11,7 +11,7 @@ export default class TableroController {
 
     async createTablero(req: Request, res: Response): Promise<any> {
         try {
-            req.body.usuarioCreacion = req.body.user_client.user.ficha           
+            req.body.usuarioCreacion = req.body.user_client.user.ficha
             const response = await TableroService.createTablero(req.body);
             if (!response.ok) {
                 return res.status(400).json({
@@ -46,7 +46,7 @@ export default class TableroController {
 
     async tableroPrincipal(req: Request, res: Response): Promise<Response> {
         try {
-            console.log("ficha del decoded: ",  req.body.user_client.user.ficha)
+            console.log("ficha del decoded: ", req.body.user_client.user.ficha)
             const result = await TableroService.tableroPrincipal();
             if (!result.ok) {
                 return ResponseHelper.error(res, result.message, null, result.code);
@@ -60,10 +60,10 @@ export default class TableroController {
 
     async historicoByDucto(req: Request, res: Response): Promise<Response> {
         try {
-            console.log("req.params: ",req.params)
-           const {uuid_ducto} = req.params;
-           console.log("uuid_ducto: ",uuid_ducto)
-            if(uuid_ducto==null){
+            console.log("req.params: ", req.params)
+            const { uuid_ducto } = req.params;
+            console.log("uuid_ducto: ", uuid_ducto)
+            if (uuid_ducto == null) {
                 console.log("sin ducto")
                 return ResponseHelper.error(res, "sin ducto", null, 500);
             }
@@ -77,4 +77,16 @@ export default class TableroController {
             return ResponseHelper.error(res, "Error al obtener historicoByDucto", null, 500);
         }
     }
+
+    async create(req: Request, res: Response) {
+        try {
+            req.body.usuarioCreacion = req.body.user_client.user.ficha
+            const result = await TableroService.createRegistro(req.body);
+            return res.status(result.code).json(result);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ ok: false, message: "Error interno" });
+        }
+    }
+
 }

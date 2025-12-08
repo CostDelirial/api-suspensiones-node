@@ -1,9 +1,9 @@
-import { pool } from '../../config/db'; 
+import { pool } from '../../config/db';
 import ITablero from '../interfaces/tablero.interface';
 
 export class TableroDAO {
- 
-   // Obtiene el último registro por ducto
+
+  // Obtiene el último registro por ducto
   static async findLastByDucto(uuid_ducto: string) {
     const query = `
       SELECT * FROM tableroControl
@@ -17,8 +17,8 @@ export class TableroDAO {
 
   // Crear nuevo registro
   static async create(tablero: ITablero) {
-// Revisar el formato de la fecha
-console.log("datos para guardar en el tablero: ", tablero)
+    // Revisar el formato de la fecha
+    console.log("datos para guardar en el tablero: ", tablero)
     const query = `
       INSERT INTO tableroControl 
       (uuid_ducto, uuid_motivo, fecha_usuario, usuario_creacion, status, fecha_creacion)
@@ -53,7 +53,7 @@ console.log("datos para guardar en el tablero: ", tablero)
     const result = await pool.query(query);
     return result.rows;
   }
-static async getTableroPrincipal() {
+  static async getTableroPrincipal() {
     const query = `
       SELECT DISTINCT ON (t.uuid_ducto)
           t.uuid,
@@ -104,6 +104,38 @@ static async getTableroPrincipal() {
     `;
     const result = await pool.query(query, [uuid_ducto]);
     return result.rows || null;
+  }
+
+  static async insertSimple(uuid_ducto: string, uuid_motivo: string, fecha: string, usuarioCreacion: string, status: boolean) {
+
+    const query = `
+      INSERT INTO tableroControl 
+      (uuid_ducto, uuid_motivo, fecha_usuario, usuario_creacion, status, fecha_creacion)
+      VALUES ($1, $2, TO_TIMESTAMP($3, 'DD/MM/YYYY HH24:MI'), $4, $5, NOW())
+      RETURNING *;
+    `;
+    const values = [
+      uuid_ducto,
+      uuid_motivo,
+      fecha,
+      usuarioCreacion,
+      status ?? true,
+    ];
+    const result = await pool.query(query, values);
+    return result
+
+  }
+
+  static async getLastByDuct(uuid_ducto: string) {
+    const query = `
+    SELECT *
+    FROM tablerocontrol
+    WHERE uuid_ducto = $1
+    ORDER BY fecha_usuario DESC
+    LIMIT 1
+  `;
+    const result = await pool.query(query, [uuid_ducto]);
+    return result.rows[0] || null;
   }
 
 }

@@ -1,6 +1,7 @@
 import { TableroDAO } from '../daos/tablero.dao';
 import ITablero from '../interfaces/tablero.interface';
 import logger from '../../lib/logger';
+import moment from "moment";
 
 export class TableroService {
   static async createTablero(body: ITablero) {
@@ -97,4 +98,60 @@ export class TableroService {
       };
     }
   }
+
+  static async createRegistro(body: ITablero) {
+    const { uuid_ducto, uuid_motivo, fecha_usuario } = body;
+
+    // 1. Obtener el último registro del ducto
+    const last = await TableroDAO.getLastByDuct(uuid_ducto);
+
+    // 2. Convertir fechas
+    const nuevaFecha = moment(fecha_usuario, "DD/MM/YYYY HH:mm");
+
+    let fechaCursor = moment(last.fecha_usuario);
+
+
+    // 3. Resultado final
+    let inserts = [];
+
+    // 4. Generar cortes hasta el día operativo de la nueva fecha
+    while (fechaCursor < nuevaFecha.clone().startOf('day').hour(4).minute(59)) {
+
+      // Día actual 04:59
+      inserts.push({
+        uuid_ducto,
+        uuid_motivo: last.uuid_motivo,
+        fecha: fechaCursor.clone().hour(4).minute(59).format("DD/MM/YYYY HH:mm")
+      });
+
+      // Día siguiente 05:00
+      inserts.push({
+        uuid_ducto,
+        uuid_motivo: last.uuid_motivo,
+        fecha: fechaCursor.clone().add(1, 'day').hour(5).minute(0).format("DD/MM/YYYY HH:mm")
+      });
+
+      fechaCursor.add(1, 'day');
+    }
+
+
+    // 5. Insertar cortes generados
+    for (let item of inserts) {
+      await TableroDAO.insertSimple(item.uuid_ducto, item.uuid_motivo, item.fecha, body.usuarioCreacion, true);
+
+    }
+
+    // 6. Insertar el nuevo motivo en su fecha real
+    const nuevaFechaString = moment(fecha_usuario, "DD/MM/YYYY HH:mm").format("DD/MM/YYYY HH:mm");
+    const nuevo = await TableroDAO.insertSimple(uuid_ducto, uuid_motivo, nuevaFechaString, body.usuarioCreacion, true);
+
+    return {
+      ok: true,
+      message: "Registro agregado correctamente",
+      cortesGenerados: inserts.length,
+      nuevo,
+      code: 201
+    };
+  }
+
 }
