@@ -17,8 +17,9 @@ export default class Authenticate {
             }
             const jwtUtil = new JWTUtil()
             const token = req.headers.authorization.replace("Bearer ","") as string;
-            const decodeUser = await jwtUtil.decodeToken(token);
-            if(!decodeUser){
+            const decoded = await jwtUtil.decodeToken(token);
+          
+            if(!decoded){
                 const response: IResponse = {
                     ok: false,
                     message: "Token invalido. Mensaje enviado desde middleware.",
@@ -27,8 +28,7 @@ export default class Authenticate {
                   };
                   return res.status(response.code).json(response)
             }
-            
-            req.body.user_client = decodeUser;
+            req.body.user_client = decoded;
             next();
         } catch (error) {
             console.log(error)

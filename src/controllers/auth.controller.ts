@@ -79,11 +79,11 @@ export default class AuthController {
                 const result = await AuthService.LoginRefresh(decoded.user ?? decoded)
 
             return res.status(201).json({
-                ok: true,
-                message: 'Auth refresh successfully',
+                 ok: true,
+                message: 'Refresh successfully',
                 user: result.user,
                 token: result.token,
-                code: 201
+                code: 200
             });
         } catch (error) {
             logger.error(`[Error/auth/controller/login]: ${error}`)

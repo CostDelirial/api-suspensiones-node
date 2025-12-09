@@ -10,9 +10,9 @@ export default class EncryptioClass {
     //private secret = 'a-string-secret-at-least-256-bits-long'
 
 
-    generateToken(user: any) {
+    generateToken(payload: any) {
         console.log("1.- SECRET: " + this.secret)
-        return jwt.sign({ user }, this.secret, { expiresIn: '1h', algorithm: "HS512" })
+        return jwt.sign({ payload }, this.secret, { expiresIn: '4h', algorithm: "HS512" })
     }
 
     verifyToken(token: string): any {

@@ -75,42 +75,47 @@ export class AuthService {
 
   static async login(ficha: number, password: string) {
     try {
-      const existing = await AuthDAO.findByFicha(ficha)
-      if (!existing) {
-        return { ok: false, message: 'Datos no validos 404', code: 404 }
+      const user = await AuthDAO.findByFicha(ficha)
+      if (!user) {
+        return { ok: false, message: 'Datos no validos 404 - no existe la ficha', code: 404 }
       }
-      const passValid = await this.encryptClass.verifyPassword(password, existing.password)
+      const passValid = await this.encryptClass.verifyPassword(password, user.password)
       if (!passValid) {
-        return { ok: false, message: 'Datos no validos 401', code: 401 }
+        return { ok: false, message: 'Datos no validos 401 - esta mal la contraseña', code: 401 }
       }
-      const user = {
-        name: existing.name,
-        ficha: existing.ficha,
-        status: existing.status,
-        role: existing.role,
+      const payload = {
+        user: {
+          name: user.name,
+          ficha: user.ficha,
+          status: user.status,
+          role: user.role
+        }
       }
       const token = this.encryptClass.generateToken(user)
-      return { ok: true, message: 'successfull', token, user }
+      return { ok: true, token, user: payload.user, code: 200 }
     } catch (error) {
       logger.error(`[Error/auth/login]: ${error}`)
       return { ok: false, message: 'Internal server error' }
     }
   }
 
-  static async LoginRefresh(user: IUser) {
+  static async LoginRefresh(decodedUser: any) {
     try {
-      console.log("-> USER REFRESH: ", user)
-      const frontUser = {
-        name: user.name,
-        ficha: user.ficha,
-        role: user.role,
-        status: user.status
+
+      const user = decodedUser.payload ?? decodedUser;
+      console.log("Entonces user en LoginRefresh:", user)
+      const payload = {
+        user: {
+          name: user.name,
+          ficha: user.ficha,
+          status: user.status,
+          role: user.role
+        }
       }
-      console.log("frontUser: ",frontUser)
-      console.log("user: ",user)
       const jwt = new JWTUtil();
-      const tokenGen = await jwt.generateToken(frontUser)
-      return { ok: true, message: 'Successfull', tokenGen, user: frontUser, token: tokenGen }
+      const token = await jwt.generateToken(payload)
+      console.log("token de refresh: ", payload.user)
+      return { ok: true, token, user: payload.user, code: 200 }
 
     } catch (err) {
       logger.error(`[AuthControll/LoginRefresh] ${err}`)
