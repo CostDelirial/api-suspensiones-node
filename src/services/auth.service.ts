@@ -84,13 +84,10 @@ export class AuthService {
         return { ok: false, message: 'Datos no validos 401', code: 401 }
       }
       const user = {
-        //uuid: existing.uuid,
         name: existing.name,
-        //role: existing.role,
         ficha: existing.ficha,
         status: existing.status,
         role: existing.role,
-        //id: existing.id
       }
       const token = this.encryptClass.generateToken(user)
       return { ok: true, message: 'successfull', token, user }
@@ -104,16 +101,16 @@ export class AuthService {
     try {
       console.log("-> USER REFRESH: ", user)
       const frontUser = {
-        uuid: user.uuid,
         name: user.name,
         ficha: user.ficha,
         role: user.role,
         status: user.status
       }
       console.log("frontUser: ",frontUser)
+      console.log("user: ",user)
       const jwt = new JWTUtil();
       const tokenGen = await jwt.generateToken(frontUser)
-      return { ok: true, message: 'Successfull', response: null, code: 200, user: frontUser, token: tokenGen }
+      return { ok: true, message: 'Successfull', tokenGen, user: frontUser, token: tokenGen }
 
     } catch (err) {
       logger.error(`[AuthControll/LoginRefresh] ${err}`)

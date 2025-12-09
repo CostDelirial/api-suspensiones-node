@@ -75,7 +75,9 @@ export default class AuthController {
             }
             const jwt = new JWTUtil();
             const decoded = await jwt.decodeToken(token as string) as any;
-            const result = await AuthService.LoginRefresh(decoded.user)
+
+                const result = await AuthService.LoginRefresh(decoded.user ?? decoded)
+
             return res.status(201).json({
                 ok: true,
                 message: 'Auth refresh successfully',
