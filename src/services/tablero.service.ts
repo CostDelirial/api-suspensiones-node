@@ -4,41 +4,6 @@ import logger from '../../lib/logger';
 import moment from "moment";
 
 export class TableroService {
-  static async createTablero(body: ITablero) {
-    try {
-      console.log("Va a buscar el último registro del ducto: ", body.uuid_ducto);
-
-      // Buscar el último registro del ducto por fecha más reciente
-      const lastRecord = await TableroDAO.findLastByDucto(body.uuid_ducto);
-
-      console.log("Último registro encontrado: ", lastRecord);
-
-      // Si existe y tiene el mismo motivo, no se puede insertar
-      if (lastRecord && lastRecord.uuid_motivo === body.uuid_motivo) {
-        return {
-          ok: false,
-          message: `El ducto ya tiene el mismo motivo en el último registro.`,
-          code: 500,
-        };
-      }
-
-      // Crear nuevo registro
-      const newTablero = await TableroDAO.create(body);
-      return {
-        ok: true,
-        message: "Registro creado correctamente.",
-        response: newTablero,
-        code: 201,
-      };
-    } catch (error) {
-      logger.error(`[service/tablero/create]: ${error}`);
-      return {
-        ok: false,
-        message: "Error interno al crear el registro en tableroControl",
-        code: 500,
-      };
-    }
-  }
 
   static async getAll() {
     try {
@@ -99,59 +64,132 @@ export class TableroService {
     }
   }
 
+  // FUNCION MAS IMPORTANTE
   static async createRegistro(body: ITablero) {
-    const { uuid_ducto, uuid_motivo, fecha_usuario } = body;
+    try {
+      const { uuid_ducto, uuid_motivo, fecha_usuario } = body;
+      const usuarioCreacion = body.usuarioCreacion;
+      if (!uuid_ducto || !uuid_motivo || !fecha_usuario || !usuarioCreacion) {
+        return {
+          ok: false,
+          message: "Faltan datos obligatorios.",
+          code: 400
+        }
+      }
+      const nuevaFecha = moment(fecha_usuario, "DD/MM/YYYY HH:mm");
 
-    // 1. Obtener el último registro del ducto
-    const last = await TableroDAO.getLastByDuct(uuid_ducto);
+      const ultimo = await TableroDAO.findLast(uuid_ducto);
+      if (!ultimo) {
+        return { ok: false, message: "No existe registro base para este ducto", code: 404 };
+      }
 
-    // 2. Convertir fechas
-    const nuevaFecha = moment(fecha_usuario, "DD/MM/YYYY HH:mm");
+      const fechaUltima = moment(ultimo.fecha_usuario);
 
-    let fechaCursor = moment(last.fecha_usuario);
+      if (nuevaFecha.isSameOrBefore(fechaUltima)) {
+        return {
+          ok: false,
+          message: "La nueva fecha debe ser posterior al último registro",
+          code: 409
+        };
+      }
 
+     
+      // CALCULAR EL INICIO DEL SIGUIENTE DÍA OPERATIVO (05:00)
+      let inicioNext = fechaUltima.clone();
 
-    // 3. Resultado final
-    let inserts = [];
+      if (inicioNext.hour() >= 5) {
+        inicioNext.add(1, "day");
+      }
 
-    // 4. Generar cortes hasta el día operativo de la nueva fecha
-    while (fechaCursor < nuevaFecha.clone().startOf('day').hour(4).minute(59)) {
+      inicioNext.set({ hour: 5, minute: 0, second: 0 });
 
-      // Día actual 04:59
+      
+      // GENERAR REGISTROS INTERMEDIOS CORRECTOS
+      const inserts: any[] = [];
+
+      // Cierre previo del día operativo: 04:59 del inicioNext
+      const cierrePrev = inicioNext.clone().subtract(1, "minute"); // 04:59 del día siguiente
+
+      if (cierrePrev.isAfter(fechaUltima) && cierrePrev.isBefore(nuevaFecha)) {
+        inserts.push({
+          uuid_ducto,
+          uuid_motivo: ultimo.uuid_motivo,
+          fecha_usuario: cierrePrev.format("YYYY-MM-DD HH:mm:ss"),
+          usuario_creacion: usuarioCreacion
+        });
+      }
+
+      // Apertura inicial: inicioNext (05:00)
+      if (inicioNext.isBefore(nuevaFecha)) {
+        inserts.push({
+          uuid_ducto,
+          uuid_motivo: ultimo.uuid_motivo,
+          fecha_usuario: inicioNext.format("YYYY-MM-DD HH:mm:ss"),
+          usuario_creacion: usuarioCreacion
+        });
+      }
+
+      // Cierres y aperturas de los días intermedios
+      let currentInicio = inicioNext.clone().add(1, "day"); 
+
+      while (true) {
+        const cierre = currentInicio.clone().subtract(1, "minute"); 
+
+        if (!cierre.isBefore(nuevaFecha)) break;
+
+        // Insertar cierre
+        inserts.push({
+          uuid_ducto,
+          uuid_motivo: ultimo.uuid_motivo,
+          fecha_usuario: cierre.format("YYYY-MM-DD HH:mm:ss"),
+          usuario_creacion: usuarioCreacion
+        });
+
+        // Insertar apertura
+        if (currentInicio.isBefore(nuevaFecha)) {
+          inserts.push({
+            uuid_ducto,
+            uuid_motivo: ultimo.uuid_motivo,
+            fecha_usuario: currentInicio.format("YYYY-MM-DD HH:mm:ss"),
+            usuario_creacion: usuarioCreacion
+          });
+        }
+
+        // Avanzar al siguiente día
+        currentInicio.add(1, "day");
+      }
+
+      // INSERTAR EL REGISTRO FINAL DEL USUARIO
       inserts.push({
         uuid_ducto,
-        uuid_motivo: last.uuid_motivo,
-        fecha: fechaCursor.clone().hour(4).minute(59).format("DD/MM/YYYY HH:mm")
+        uuid_motivo,
+        fecha_usuario: nuevaFecha.format("YYYY-MM-DD HH:mm:ss"),
+        usuario_creacion: usuarioCreacion
       });
 
-      // Día siguiente 05:00
-      inserts.push({
-        uuid_ducto,
-        uuid_motivo: last.uuid_motivo,
-        fecha: fechaCursor.clone().add(1, 'day').hour(5).minute(0).format("DD/MM/YYYY HH:mm")
-      });
+      // ORDENAR TODOS LOS REGISTROS ANTES DEL INSERT
+      inserts.sort((a, b) => moment(a.fecha_usuario).valueOf() - moment(b.fecha_usuario).valueOf());
 
-      fechaCursor.add(1, 'day');
+      //  INSERTAR EN BD
+      await TableroDAO.bulkInsert(inserts);
+
+      return {
+        ok: true,
+        message: "Registro creado correctamente",
+        code: 201,
+        response: inserts
+      };
+
+    } catch (error) {
+      logger.error(`[service/tablero/createRegistro]: ${error}`);
+      return {
+        ok: false,
+        message: "Error interno",
+        code: 500
+      };
     }
-
-
-    // 5. Insertar cortes generados
-    for (let item of inserts) {
-      await TableroDAO.insertSimple(item.uuid_ducto, item.uuid_motivo, item.fecha, body.usuarioCreacion, true);
-
-    }
-
-    // 6. Insertar el nuevo motivo en su fecha real
-    const nuevaFechaString = moment(fecha_usuario, "DD/MM/YYYY HH:mm").format("DD/MM/YYYY HH:mm");
-    const nuevo = await TableroDAO.insertSimple(uuid_ducto, uuid_motivo, nuevaFechaString, body.usuarioCreacion, true);
-
-    return {
-      ok: true,
-      message: "Registro agregado correctamente",
-      cortesGenerados: inserts.length,
-      nuevo,
-      code: 201
-    };
   }
+
+
 
 }

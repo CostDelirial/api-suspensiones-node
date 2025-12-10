@@ -9,7 +9,7 @@ export default class CatSubgerenciaController {
 
   async createCatSubgerencia(req: Request, res: Response): Promise<any> {
     try {
-      req.body.usuarioCreacion = req.body.user_client.user.ficha
+      req.body.usuarioCreacion = req.body.user_client.payload.ficha
       const response = await CatSubgerenciaService.createCatSubgerencia(req.body);
       if (!response.ok) {
         return res.status(400).json({

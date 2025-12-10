@@ -3,15 +3,17 @@ import ITablero from '../interfaces/tablero.interface';
 
 export class TableroDAO {
 
-  // Obtiene el último registro por ducto
-  static async findLastByDucto(uuid_ducto: string) {
+ static async findLast(uuid_ducto: string) {
     const query = `
-      SELECT * FROM tableroControl
+      SELECT *
+      FROM tablerocontrol
       WHERE uuid_ducto = $1
       ORDER BY fecha_usuario DESC
       LIMIT 1
     `;
-    const result = await pool.query(query, [uuid_ducto]);
+    const values = [uuid_ducto];
+
+    const result = await pool.query(query, values);
     return result.rows[0] || null;
   }
 
@@ -136,6 +138,59 @@ export class TableroDAO {
   `;
     const result = await pool.query(query, [uuid_ducto]);
     return result.rows[0] || null;
+  }
+
+  static async bulkInsert(registros: {
+    uuid_ducto: string,
+    uuid_motivo: string,
+    fecha_usuario: string | Date,
+    km?: number,
+    observaciones?: string,
+    usuario_creacion?: string
+  }[]) {
+    if (!registros || registros.length === 0) return [];
+
+    let query = `
+      INSERT INTO tablerocontrol
+      (uuid_ducto, uuid_motivo, fecha_usuario, km, observaciones, usuario_creacion, fecha_creacion, status)
+      VALUES 
+    `;
+
+    const values: any[] = [];
+    let placeholders: string[] = [];
+
+    registros.forEach((r, i) => {
+      const base = i * 8;
+
+      placeholders.push(`(
+        $${base + 1},
+        $${base + 2},
+        $${base + 3},
+        $${base + 4},
+        $${base + 5},
+        $${base + 6},
+        $${base + 7},
+        $${base + 8}
+      )`);
+
+      values.push(
+        r.uuid_ducto,
+        r.uuid_motivo,
+        r.fecha_usuario,
+        r.km || null,
+        r.observaciones || null,
+        r.usuario_creacion ,
+        new Date(),
+        true
+      );
+    });
+
+    query += placeholders.join(", ");
+
+    query += ` RETURNING *`;
+
+    const result = await pool.query(query, values);
+    return result.rows;
   }
 
 }

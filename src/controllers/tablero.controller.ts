@@ -9,31 +9,6 @@ import UserService from "../services/user.service";
 
 export default class TableroController {
 
-    async createTablero(req: Request, res: Response): Promise<any> {
-        try {
-            req.body.usuarioCreacion = req.body.user_client.user.ficha
-            const response = await TableroService.createTablero(req.body);
-            if (!response.ok) {
-                return res.status(400).json({
-                    ok: false,
-                    message: response.message,
-                    response: null,
-                    code: 400
-                }
-                )
-            }
-            return res.status(201).json({
-                ok: true,
-                message: response.message,
-                response: response.response,
-                code: 201
-            });
-        } catch (error) {
-            logger.error(`[Error/controller/createTablero]: ${error}`);
-            return ResponseHelper.error(res, 'Internal Server Error', null, 500);
-        }
-    }
-
     async getTableros(req: Request, res: Response): Promise<any> {
         try {
             const result = await TableroService.getAll();
@@ -83,7 +58,8 @@ export default class TableroController {
 
     async create(req: Request, res: Response) {
         try {
-            req.body.usuarioCreacion = req.body.user_client.user.ficha
+            console.log("AQUI: ",req.body)
+            req.body.usuarioCreacion = req.body.user_client.payload.ficha
             const result = await TableroService.createRegistro(req.body);
             return res.status(result.code).json(result);
         } catch (err) {

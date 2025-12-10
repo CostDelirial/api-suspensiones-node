@@ -9,7 +9,7 @@ export default class CatMotivoController {
 
     async createCatMotivo(req: Request, res: Response): Promise<any> {
         try {
-            req.body.usuarioCreacion = req.body.user_client.user.ficha
+            req.body.usuarioCreacion = req.body.user_client.payload.ficha
             const response = await CatMotivoService.createCatMotivo(req.body);
             if (!response.ok) {
                 return res.status(400).json({
