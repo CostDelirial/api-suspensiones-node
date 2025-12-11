@@ -77,6 +77,16 @@ export class TableroService {
         }
       }
       const nuevaFecha = moment(fecha_usuario, "DD/MM/YYYY HH:mm");
+      const horaUsuario = nuevaFecha.format("HH:mm");
+      if (horaUsuario === "04:59" || horaUsuario === "05:00") {
+        return {
+          ok: false,
+          message: "No se permiten registros en horas operativas de corte (04:59 o 05:00).",
+          code: 400
+        }
+      }
+
+
 
       const ultimo = await TableroDAO.findLast(uuid_ducto);
       if (!ultimo) {
@@ -93,7 +103,7 @@ export class TableroService {
         };
       }
 
-     
+
       // CALCULAR EL INICIO DEL SIGUIENTE DÍA OPERATIVO (05:00)
       let inicioNext = fechaUltima.clone();
 
@@ -103,7 +113,7 @@ export class TableroService {
 
       inicioNext.set({ hour: 5, minute: 0, second: 0 });
 
-      
+
       // GENERAR REGISTROS INTERMEDIOS CORRECTOS
       const inserts: any[] = [];
 
@@ -130,10 +140,10 @@ export class TableroService {
       }
 
       // Cierres y aperturas de los días intermedios
-      let currentInicio = inicioNext.clone().add(1, "day"); 
+      let currentInicio = inicioNext.clone().add(1, "day");
 
       while (true) {
-        const cierre = currentInicio.clone().subtract(1, "minute"); 
+        const cierre = currentInicio.clone().subtract(1, "minute");
 
         if (!cierre.isBefore(nuevaFecha)) break;
 

@@ -81,7 +81,7 @@ export class TableroDAO {
     return result.rows;
   }
 
-  // Obtiene el último registro por ducto
+  // Obtiene el historico registrado por ducto
   static async getHistoricoByDucto(uuid_ducto: string) {
     const query = `
      SELECT  
@@ -102,6 +102,10 @@ export class TableroDAO {
       INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
       INNER JOIN cat_semaforo s ON m.uuid_semaforo = s.uuid
       WHERE t.uuid_ducto = $1
+      AND NOT (
+      to_char(t.fecha_usuario, 'HH24:MI') = '04:59'
+      or to_char(t.fecha_usuario, 'HH24:MI') = '05:00'
+      )
       ORDER BY t.fecha_usuario DESC;
     `;
     const result = await pool.query(query, [uuid_ducto]);
