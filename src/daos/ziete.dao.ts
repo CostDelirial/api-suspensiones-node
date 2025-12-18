@@ -1,4 +1,4 @@
-import { pool } from '../../config/db'; 
+import { pool } from '../../config/db';
 import IZiete from "../interfaces/ziete.interface";
 
 export class ZieteDAO {
@@ -45,9 +45,13 @@ export class ZieteDAO {
           THEN horas ELSE 0 END
         )::TEXT                                 AS "tOperando",
 
-        COUNT(DISTINCT CASE 
-          WHEN motivo IN ('OPERANDO', 'OPERANDO PARCIAL') 
-          THEN DATE(fecha_usuario) END
+        ROUND(
+        SUM(
+        CASE
+        WHEN motivo IN ('OPERANDO', 'OPERANDO PARCIAL') 
+        THEN horas ELSE 0
+        END
+        ) / 24, 2
         )                                       AS "dOperando",
 
         SUM(CASE 
@@ -55,9 +59,13 @@ export class ZieteDAO {
           THEN horas ELSE 0 END
         )::TEXT                                 AS "tFueraOpe",
 
-        COUNT(DISTINCT CASE 
-          WHEN motivo NOT IN ('OPERANDO', 'OPERANDO PARCIAL') 
-          THEN DATE(fecha_usuario) END
+        ROUND(
+        SUM(
+        CASE
+        WHEN motivo NOT IN ('OPERANDO', 'OPERANDO PARCIAL') 
+        THEN horas ELSE 0
+        END
+        ) / 24, 2
         )                                       AS "dFueraOpe",
 
         -- PORCENTAJES
@@ -102,7 +110,7 @@ export class ZieteDAO {
     return result.rows;
   }
 
-  static async findParticular(fini: Date, ffin: Date,id: string): Promise<IZiete | null> {
+  static async findParticular(fini: Date, ffin: Date, id: string): Promise<IZiete | null> {
     const result = await pool.query('SELECT * FROM cat_puesto WHERE id = $1', [id]);
     return result.rows[0] || null;
   }
