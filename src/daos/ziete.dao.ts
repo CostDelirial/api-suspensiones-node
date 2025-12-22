@@ -85,17 +85,18 @@ export class ZieteDAO {
 
         ROUND(
           SUM(CASE 
-            WHEN logistico = true 
+            WHEN coalesce(logistico, true)  = true 
             THEN horas ELSE 0 END
           ) / NULLIF(SUM(horas), 0) * 100, 2
         )                                       AS "pLogistico",
 
         ROUND(
           SUM(CASE 
-            WHEN logistico = false 
+            WHEN coalesce(logistico, false) = false 
             THEN horas ELSE 0 END
           ) / NULLIF(SUM(horas), 0) * 100, 2
         )                                       AS "pNoLogistico"
+           
 
       FROM calculos
       GROUP BY uuid_ducto, n_ducto
@@ -110,9 +111,72 @@ export class ZieteDAO {
     return result.rows;
   }
 
-  static async findParticular(fini: Date, ffin: Date, id: string): Promise<IZiete | null> {
-    const result = await pool.query('SELECT * FROM cat_puesto WHERE id = $1', [id]);
-    return result.rows[0] || null;
-  }
+  static async findParticular(
+  uuidDucto: string,
+  fini: Date,
+  ffin: Date
+) {
+
+  const query = `
+    WITH ordenados AS (
+      SELECT
+        t.uuid_ducto,
+        t.uuid_motivo,
+        m.nombre AS motivo,
+        m.logistico,
+        t.fecha_usuario,
+        LEAD(t.fecha_usuario) OVER (
+          PARTITION BY t.uuid_ducto
+          ORDER BY t.fecha_usuario
+        ) AS fecha_siguiente,
+        LEAD(m.logistico) OVER (
+          PARTITION BY t.uuid_ducto
+          ORDER BY t.fecha_usuario
+        ) AS logistico_siguiente
+      FROM tableroControl t
+      INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
+      WHERE
+        t.uuid_ducto = $1
+        AND t.fecha_usuario BETWEEN $3 AND $4
+    ),
+    calculo AS (
+      SELECT
+        motivo,
+        EXTRACT(EPOCH FROM (fecha_siguiente - fecha_usuario)) / 3600 AS horas
+      FROM ordenados
+      WHERE
+        logistico = $2
+        AND logistico_siguiente = $2
+        AND fecha_siguiente IS NOT NULL
+    )
+    SELECT
+      motivo AS movimientos,
+      ROUND(SUM(horas), 2) AS tiempoHoras,
+      ROUND(SUM(horas) / 24, 2) AS dias,
+      COUNT(*) AS ocurrencia
+    FROM calculo
+    GROUP BY motivo
+    ORDER BY tiempoHoras DESC;
+  `;
+
+  const logisticos = await pool.query(query, [
+    uuidDucto,
+    true,
+    fini,
+    ffin
+  ]);
+
+  const noLogisticos = await pool.query(query, [
+    uuidDucto,
+    false,
+    fini,
+    ffin
+  ]);
+
+  return {
+    logisticos: logisticos.rows,
+    noLogisticos: noLogisticos.rows
+  };
+}
 
 }

@@ -76,8 +76,12 @@ export class TableroService {
           code: 400
         }
       }
+      console.log("aqui 1")
       const nuevaFecha = moment(fecha_usuario, "DD/MM/YYYY HH:mm");
+      console.log("fecha_usuario: ", fecha_usuario)
+      console.log("nuevaFecha: ", nuevaFecha)
       const horaUsuario = nuevaFecha.format("HH:mm");
+      console.log("aqui 3")
       if (horaUsuario === "04:59" || horaUsuario === "05:00") {
         return {
           ok: false,
@@ -94,7 +98,7 @@ export class TableroService {
       }
 
       const fechaUltima = moment(ultimo.fecha_usuario);
-
+console.log("fechaUltima: ", fechaUltima)
       if (nuevaFecha.isSameOrBefore(fechaUltima)) {
         return {
           ok: false,
@@ -103,20 +107,17 @@ export class TableroService {
         };
       }
 
-
       // CALCULAR EL INICIO DEL SIGUIENTE DÍA OPERATIVO (05:00)
       let inicioNext = fechaUltima.clone();
 
       if (inicioNext.hour() >= 5) {
         inicioNext.add(1, "day");
       }
-
       inicioNext.set({ hour: 5, minute: 0, second: 0 });
 
 
       // GENERAR REGISTROS INTERMEDIOS CORRECTOS
       const inserts: any[] = [];
-
       // Cierre previo del día operativo: 04:59 del inicioNext
       const cierrePrev = inicioNext.clone().subtract(1, "minute"); // 04:59 del día siguiente
 
@@ -128,7 +129,7 @@ export class TableroService {
           usuario_creacion: usuarioCreacion
         });
       }
-
+console.log("aqui 24 ")
       // Apertura inicial: inicioNext (05:00)
       if (inicioNext.isBefore(nuevaFecha)) {
         inserts.push({
@@ -138,15 +139,16 @@ export class TableroService {
           usuario_creacion: usuarioCreacion
         });
       }
-
+console.log("aqui 25 ")
       // Cierres y aperturas de los días intermedios
       let currentInicio = inicioNext.clone().add(1, "day");
-
+console.log("aqui 26 ")
       while (true) {
         const cierre = currentInicio.clone().subtract(1, "minute");
-
+console.log("nuevaFecha: ", nuevaFecha)
+console.log("cierre: ", cierre)
         if (!cierre.isBefore(nuevaFecha)) break;
-
+console.log("aqui 28 ")
         // Insertar cierre
         inserts.push({
           uuid_ducto,
@@ -154,7 +156,7 @@ export class TableroService {
           fecha_usuario: cierre.format("YYYY-MM-DD HH:mm:ss"),
           usuario_creacion: usuarioCreacion
         });
-
+console.log("aqui 29 ")
         // Insertar apertura
         if (currentInicio.isBefore(nuevaFecha)) {
           inserts.push({
@@ -164,7 +166,7 @@ export class TableroService {
             usuario_creacion: usuarioCreacion
           });
         }
-
+console.log("aqui 28 ")
         // Avanzar al siguiente día
         currentInicio.add(1, "day");
       }

@@ -25,6 +25,7 @@ export default class ZieteController {
     }
 async getParticular(req: Request, res: Response): Promise<any> {
         try {
+            console.log("body recibido: ", req.body)
             const response = await ZieteService.getParticular(req.body);
             return res.status(200).json({
                 ok: true,

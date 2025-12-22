@@ -6,6 +6,6 @@ const zieteRouter = Router()
 const zieteController = new ZieteController()
 
 zieteRouter.post('/general', AuthMiddleware.autetication, zieteController.getGeneral.bind(zieteController))
-zieteRouter.get('/particular/:uuid_ducto/:fecha_ini/:fecha_fin', AuthMiddleware.autetication, zieteController.getParticular.bind(zieteController))
+zieteRouter.post('/particular', AuthMiddleware.autetication, zieteController.getParticular.bind(zieteController))
 
 export default zieteRouter;

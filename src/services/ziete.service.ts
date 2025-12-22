@@ -27,7 +27,7 @@ export class ZieteService {
  static async getParticular(body: IZiete) {
     try {
       const { fini, ffin, uuidDucto } = body;
-      const zietes = await ZieteDAO.findParticular(fini, ffin, uuidDucto);
+      const zietes = await ZieteDAO.findParticular(uuidDucto, fini, ffin );
       return {
         ok: true,
         message: 'Lista obtenida',
