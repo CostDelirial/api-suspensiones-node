@@ -138,6 +138,7 @@ export class ZieteDAO {
       WHERE
         t.uuid_ducto = $1
         AND t.fecha_usuario BETWEEN $3 AND $4
+        AND m.nombre NOT IN ('OPERANDO', 'OPERANDO PARCIAL') 
     ),
     calculo AS (
       SELECT
