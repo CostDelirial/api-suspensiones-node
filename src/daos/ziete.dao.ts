@@ -180,4 +180,73 @@ export class ZieteDAO {
   };
 }
 
+static async findTimeline(
+    uuid_ducto: string,
+    fecha_inicio: string,
+    fecha_fin: string
+  ) {
+
+    const query = `
+      WITH movimientos AS (
+        SELECT
+          t.fecha_usuario,
+          CASE
+            WHEN m.nombre IN ('OPERANDO', 'OPERANDO PARCIAL')
+              THEN 'operando'
+            ELSE 'suspendido'
+          END AS tipo
+        FROM tableroControl t
+        INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
+        WHERE t.uuid_ducto = $1
+          AND t.fecha_usuario BETWEEN $2 AND $3
+        ORDER BY t.fecha_usuario
+      ),
+      diferencias AS (
+        SELECT
+          tipo,
+          fecha_usuario,
+          LAG(tipo) OVER (ORDER BY fecha_usuario) AS tipo_anterior,
+          LAG(fecha_usuario) OVER (ORDER BY fecha_usuario) AS fecha_anterior
+        FROM movimientos
+      ),
+      horas AS (
+        SELECT
+          tipo,
+          fecha_usuario,
+          fecha_anterior,
+          EXTRACT(
+            EPOCH FROM (fecha_usuario - fecha_anterior)
+          ) / 3600 AS horas,
+          CASE
+            WHEN tipo <> tipo_anterior THEN 1
+            ELSE 0
+          END AS cambio
+        FROM diferencias
+        WHERE fecha_anterior IS NOT NULL
+      ),
+      grupos AS (
+        SELECT
+          tipo,
+          horas,
+          SUM(cambio) OVER (ORDER BY fecha_usuario) AS grupo
+        FROM horas
+      )
+      SELECT
+        tipo AS type,
+        ROUND(SUM(horas) / 24, 2) AS dias
+      FROM grupos
+      GROUP BY tipo, grupo
+      ORDER BY grupo;
+    `;
+
+    const values = [
+      uuid_ducto,
+      fecha_inicio,
+      fecha_fin
+    ];
+    const result = await pool.query(query, values);
+    return result.rows;
+  }
+
+
 }

@@ -43,4 +43,37 @@ export class ZieteService {
       };
     }
   }
+
+static async getTimeline(
+    uuid_ducto: string,
+    fecha_inicio: string,
+    fecha_fin: string
+  ) {
+    try {
+      const fini = `${fecha_inicio} 05:00:00`;
+      const ffin = `${fecha_fin} 04:59:59`;
+
+      const timeline = await ZieteDAO.findTimeline(
+        uuid_ducto,
+        fini,
+        ffin
+      );
+
+      return {
+        ok: true,
+        message: 'Línea de tiempo obtenida',
+        response: timeline,
+        code: 200
+      };
+
+    } catch (error) {
+      logger.error(`[service/timeline/getTimeline]: ${error}`);
+      return {
+        ok: false,
+        message: 'Error al generar línea de tiempo',
+        code: 500
+      };
+    }
+  }
+
 }

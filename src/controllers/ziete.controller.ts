@@ -38,5 +38,47 @@ async getParticular(req: Request, res: Response): Promise<any> {
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
         }
     }
+
+    async getTimeline(req: Request, res: Response) {
+    try {
+      console.log("body recibido: ", req.body)
+
+      if (!req.body.uuidDucto || !req.body.fini || !req.body.ffin) {
+        return ResponseHelper.error(
+          res,
+          'Parámetros incompletos',
+          400
+        );
+      }
+
+      const result = await ZieteService.getTimeline(
+        req.body.uuidDucto,
+        req.body.fini,
+        req.body.ffin
+      );
+
+      if (!result.ok) {
+        return ResponseHelper.error(
+          res,
+          result.message,
+          result.code
+        );
+      }
+
+      return ResponseHelper.success(
+        res,
+        result.message,
+        result.response,
+        result.code
+      );
+
+    } catch (error) {
+      return ResponseHelper.error(
+        res,
+        'Error interno',
+        500
+      );
+    }
+  }
    
 }
