@@ -111,6 +111,8 @@ export class ZieteDAO {
     return result.rows;
   }
 
+
+  // MODULO PARTICULAR POR DUCTO
   static async findParticular(
   uuidDucto: string,
   fini: Date,
@@ -125,9 +127,12 @@ export class ZieteDAO {
         m.nombre AS motivo,
         m.logistico,
         t.fecha_usuario,
+        coalesce(
         LEAD(t.fecha_usuario) OVER (
           PARTITION BY t.uuid_ducto
           ORDER BY t.fecha_usuario
+		  ),
+		  $4::timestamp
         ) AS fecha_siguiente,
         LEAD(m.logistico) OVER (
           PARTITION BY t.uuid_ducto
@@ -138,7 +143,7 @@ export class ZieteDAO {
       WHERE
         t.uuid_ducto = $1
         AND t.fecha_usuario BETWEEN $3 AND $4
-        AND m.nombre NOT IN ('OPERANDO', 'OPERANDO PARCIAL') 
+        --AND m.nombre NOT IN ('OPERANDO', 'OPERANDO PARCIAL') 
     ),
     calculo AS (
       SELECT
@@ -146,8 +151,8 @@ export class ZieteDAO {
         EXTRACT(EPOCH FROM (fecha_siguiente - fecha_usuario)) / 3600 AS horas
       FROM ordenados
       WHERE
-        logistico = $2   
-        --AND logistico_siguiente = true
+        logistico = $2
+        --AND logistico_siguiente = $2
         --AND fecha_siguiente IS NOT NULL
     )
     SELECT
@@ -156,22 +161,27 @@ export class ZieteDAO {
       ROUND(SUM(horas) / 24, 2) AS dias,
       COUNT(*) AS ocurrencia
     FROM calculo
+    WHERE motivo NOT IN ('OPERANDO', 'OPERANDO PARCIAL')
     GROUP BY motivo
     ORDER BY tiempoHoras DESC;
   `;
 
+  // Ajuste de día operativo
+    const fechaInicio = `${fini} 05:00:00`;
+    const fechaFin = `${ffin} 04:59:59`;
+
   const logisticos = await pool.query(query, [
     uuidDucto,
     true,
-    fini,
-    ffin
+    fechaInicio,
+    fechaFin
   ]);
 
   const noLogisticos = await pool.query(query, [
     uuidDucto,
     false,
-    fini,
-    ffin
+    fechaInicio,
+    fechaFin
   ]);
 
   return {
