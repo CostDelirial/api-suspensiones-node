@@ -146,9 +146,9 @@ export class ZieteDAO {
         EXTRACT(EPOCH FROM (fecha_siguiente - fecha_usuario)) / 3600 AS horas
       FROM ordenados
       WHERE
-        logistico = $2
-        AND logistico_siguiente = $2
-        AND fecha_siguiente IS NOT NULL
+        logistico = $2   
+        --AND logistico_siguiente = true
+        --AND fecha_siguiente IS NOT NULL
     )
     SELECT
       motivo AS movimientos,
