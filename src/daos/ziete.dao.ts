@@ -165,6 +165,7 @@ export class ZieteDAO {
     GROUP BY motivo
     ORDER BY tiempoHoras DESC;
   `;
+  
 
   // Ajuste de día operativo
     const fechaInicio = `${fini} 05:00:00`;
