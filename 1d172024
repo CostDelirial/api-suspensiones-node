@@ -1,0 +1,69 @@
+[33m1d17204[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m correcciones particular 2
+[33me0442c2[m correcciones particular
+[33me1418f6[m parcial
+[33m2e107e5[m linea de tiempo
+[33medbdc7d[m post particular OPERANDO
+[33m3d3c5cf[m CREATE DUCTO CON CONTROTABLERO
+[33md344656[m post particular
+[33m52e6105[m post general
+[33m5b6e994[m ziete dias general
+[33m7e2a719[m ziete
+[33m0d2960d[m no ver cortes
+[33m40c8418[m INSERT PERFECT
+[33m1bec3bb[m payload
+[33mc79d411[m decode
+[33m54f729e[m response
+[33m2ac86c2[m response
+[33m335849e[m re token
+[33m40137ec[m seccionamiento de rgistro
+[33m07766ac[m historico consulta
+[33m387282f[m historico
+[33m04eaf97[m Merge branch 'main' of https://github.com/CostDelirial/api-suspensiones-node
+[33m1efc95f[m nada
+[33m1b06fe3[m role login
+[33m7f5d6e6[m mensaje tablero3
+[33m8bb4eb2[m mensaje tablero2
+[33m8ec2765[m mensaje tablero
+[33mc17f0b7[m FORZAR TO_TIME
+[33m6993f26[m guiones
+[33mff80f7a[m middleware
+[33m272ddb4[m users STATUS
+[33m9aea16f[m users salt y pasword
+[33m73ff9c0[m users salt
+[33m31db809[m Merge branch 'main' of https://github.com/CostDelirial/api-suspensiones-node
+[33m99bedec[m users salt
+[33m230f664[m role
+[33m7454e32[m users nom
+[33ma391642[m users nuevo
+[33m379877d[m get users
+[33m8c8d2b3[m color1
+[33m6f4e015[m color
+[33mbf97122[m tablero principal
+[33m2df99c2[m daos
+[33m736b55a[m daos
+[33m4393efa[m response get
+[33m695d876[m response 2
+[33m7238bff[m response
+[33m36023d6[m COLOR SEMAFORO
+[33m10b5125[m validacione login
+[33mb818059[m cat_motivos
+[33mb71c49c[m cat_semaforo
+[33ma3401fb[m refresh 3
+[33ma2da341[m refresh 2
+[33m5a5da8f[m refresh
+[33mb2cdcec[m usuario creacion
+[33meddf04c[m decode role
+[33md1b7407[m primer commit
+[33mc1b13b2[m Merge branch 'main' of https://github.com/CostDelirial/api-suspensiones-node
+[33mb7a23c0[m ignore
+[33ma88c962[m Merge pull request #1 from CostDelirial/dev
+[33m6d02967[m default.yml
+[33m525e6b3[m default.yml
+[33m649eaab[m login encrypted jwt
+[33mf22618f[m conection model postUser
+[33md8f04f9[m userRoutes userInterface serverClass postgresCon
+[33mbf16aec[m jswtUtil
+[33m434f7ed[m inicial
+[33mebee895[m  routes
+[33m98311fc[m logger.ts pakage-lock-.json package.json
+[33m9b84686[m inicila gitignore nodemon

@@ -165,11 +165,21 @@ export class ZieteDAO {
     GROUP BY motivo
     ORDER BY tiempoHoras DESC;
   `;
-  
+
 
   // Ajuste de día operativo
+  console.log("ffin: ",ffin)
     const fechaInicio = `${fini} 05:00:00`;
-    const fechaFin = `${ffin} 04:59:59`;
+    const aux = new Date(ffin)
+      console.log("aux: ",aux)
+    aux.setDate(aux.getDate() + 1)
+          console.log("aux2: ",aux)
+
+    
+    const fechaFinAux = aux.toISOString().split('T')[0]
+    const fechaFin = `${fechaFinAux} 05:00:00`;
+    console.log("fechaFin 1: ", fechaFin)
+    console.log("fechaInicio 1: ", fechaInicio)
 
   const logisticos = await pool.query(query, [
     uuidDucto,
