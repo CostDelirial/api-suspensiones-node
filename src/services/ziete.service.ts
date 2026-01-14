@@ -46,17 +46,16 @@ export class ZieteService {
 
 static async getTimeline(
     uuid_ducto: string,
-    fecha_inicio: string,
-    fecha_fin: string
+    fecha_inicio: Date,
+    fecha_fin: Date
   ) {
     try {
-      const fini = `${fecha_inicio} 05:00:00`;
-      const ffin = `${fecha_fin} 04:59:59`;
+     
 
       const timeline = await ZieteDAO.findTimeline(
         uuid_ducto,
-        fini,
-        ffin
+        fecha_inicio,
+        fecha_fin
       );
 
       return {

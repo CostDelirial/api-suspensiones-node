@@ -210,7 +210,7 @@ ORDER BY n_ducto;
     const aux = new Date(ffin)
     aux.setDate(aux.getDate() + 1)
     const fechaFinAux = aux.toISOString().split('T')[0]
-    const fechaFin = `${fechaFinAux} 05:00:00`;
+    const fechaFin = `${fechaFinAux} 04:59:00`;
 
   const logisticos = await pool.query(query, [
     uuidDucto,
@@ -234,67 +234,107 @@ ORDER BY n_ducto;
 
 static async findTimeline(
     uuid_ducto: string,
-    fecha_inicio: string,
-    fecha_fin: string
+    fecha_inicio: Date,
+    fecha_fin: Date
   ) {
 
     const query = `
-      WITH movimientos AS (
-        SELECT
-          t.fecha_usuario,
-          CASE
-            WHEN m.nombre IN ('OPERANDO', 'OPERANDO PARCIAL')
-              THEN 'operando'
-            ELSE 'suspendido'
-          END AS tipo
-        FROM tableroControl t
-        INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
-        WHERE t.uuid_ducto = $1
-          AND t.fecha_usuario BETWEEN $2 AND $3
-        ORDER BY t.fecha_usuario
-      ),
-      diferencias AS (
-        SELECT
-          tipo,
-          fecha_usuario,
-          LAG(tipo) OVER (ORDER BY fecha_usuario) AS tipo_anterior,
-          LAG(fecha_usuario) OVER (ORDER BY fecha_usuario) AS fecha_anterior
-        FROM movimientos
-      ),
-      horas AS (
-        SELECT
-          tipo,
-          fecha_usuario,
-          fecha_anterior,
-          EXTRACT(
-            EPOCH FROM (fecha_usuario - fecha_anterior)
-          ) / 3600 AS horas,
-          CASE
-            WHEN tipo <> tipo_anterior THEN 1
-            ELSE 0
-          END AS cambio
-        FROM diferencias
-        WHERE fecha_anterior IS NOT NULL
-      ),
-      grupos AS (
-        SELECT
-          tipo,
-          horas,
-          SUM(cambio) OVER (ORDER BY fecha_usuario) AS grupo
-        FROM horas
-      )
-      SELECT
-        tipo AS type,
-        ROUND(SUM(horas) / 24, 2) AS dias
-      FROM grupos
-      GROUP BY tipo, grupo
-      ORDER BY grupo;
+      WITH eventos_rango AS (
+  SELECT
+    t.fecha_usuario,
+    CASE
+      WHEN m.nombre IN ('OPERANDO', 'OPERANDO PARCIAL')
+        THEN 'operando'
+      ELSE 'suspendido'
+    END AS tipo
+  FROM tableroControl t
+  INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
+  WHERE t.uuid_ducto = $1
+    AND t.fecha_usuario BETWEEN
+        $2
+        AND $3
+),
+
+evento_inicio AS (
+  SELECT
+    $2::timestamp AS fecha_usuario,
+    CASE
+      WHEN m.nombre IN ('OPERANDO', 'OPERANDO PARCIAL')
+        THEN 'operando'
+      ELSE 'suspendido'
+    END AS tipo
+  FROM tableroControl t
+  INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
+  WHERE t.uuid_ducto = $1
+    AND t.fecha_usuario < $2
+  ORDER BY t.fecha_usuario DESC
+  LIMIT 1
+),
+
+eventos AS (
+  SELECT * FROM eventos_rango
+  UNION ALL
+  SELECT * FROM evento_inicio
+  UNION ALL
+  SELECT
+    $3::timestamp AS fecha_usuario,
+    NULL AS tipo
+),
+
+ordenados AS (
+  SELECT
+    tipo,
+    fecha_usuario,
+    LEAD(fecha_usuario) OVER (ORDER BY fecha_usuario) AS fecha_siguiente,
+    LAG(tipo) OVER (ORDER BY fecha_usuario) AS tipo_anterior
+  FROM eventos
+),
+
+tramos AS (
+  SELECT
+    tipo,
+    fecha_usuario,
+    fecha_siguiente,
+    EXTRACT(EPOCH FROM (fecha_siguiente - fecha_usuario)) / 3600 AS horas,
+    CASE
+      WHEN tipo <> tipo_anterior THEN 1
+      ELSE 0
+    END AS cambio
+  FROM ordenados
+  WHERE fecha_siguiente IS NOT NULL
+    AND tipo IS NOT NULL
+),
+
+grupos AS (
+  SELECT
+    tipo,
+    horas,
+    SUM(cambio) OVER (ORDER BY fecha_usuario) AS grupo
+  FROM tramos
+)
+
+SELECT
+  tipo AS type,
+  ROUND(SUM(horas) / 24, 2) AS dias
+FROM grupos
+GROUP BY grupo, tipo
+ORDER BY grupo;
     `;
+
+    // Ajuste de día operativo
+    const fechaInicio = `${fecha_inicio} 05:00:00`;
+    const aux = new Date(fecha_fin)
+    aux.setDate(aux.getDate() + 1)
+    const fechaFinAux = aux.toISOString().split('T')[0]
+    const fechaFin = `${fechaFinAux} 04:59:00`;
+
+
+    console.log("line time: ", fechaInicio, " - ", fechaFin)
 
     const values = [
       uuid_ducto,
-      fecha_inicio,
-      fecha_fin
+      fechaInicio,
+      fechaFin
     ];
     const result = await pool.query(query, values);
     return result.rows;
