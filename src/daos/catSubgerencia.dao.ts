@@ -8,40 +8,26 @@ export class CatSubgerenciaDAO {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;
     `;
-    const values = [body.nombre, body.siglas, new Date(), body.usuarioCreacion, 'true', body.uuidGerencia];
+    const values = [body.name, body.siglas, new Date(), body.usuarioCreacion, 'true', body.uuidGerencia];
     const result = await pool.query(query, values);
     return result.rows[0];
   }
 
-  static async update(body: IcatSubgerencia): Promise<any> {
-    const query = `
-      UPDATE cat_subgerencia
-      SET nombre = $1,
-          fecha_actualizacion = $2,
-          usuario_actualizacion = $3,
-          status = $4
-      WHERE id = $5
-      RETURNING *;
-    `;
-    const values = [
-      body.nombre,
-      new Date(),
-      body.fechaModificacion || '',
-      body.estatus,
-      body.id,
-    ];
-    const result = await pool.query(query, values);
-    return result.rows[0];
-  }
-
-  static async findAll(): Promise<IcatSubgerencia[]> {
+    static async findAll(): Promise<IcatSubgerencia[]> {
     const query = 'SELECT uuid, name, status FROM cat_subgerencia';
     const result = await pool.query(query);
     return result.rows;
   }
 
+   static async findByName(nombre: string): Promise<IcatSubgerencia | null> {
+      console.log("va a ejecutar el query")
+      const result = await pool.query('SELECT * FROM cat_subgerencia WHERE nombre = $1 LIMIT 1', [nombre]);
+      return result.rows[0] || null;
+    }
+  
+
   static async findById(id: string): Promise<IcatSubgerencia | null> {
-    const query = 'SELECT * FROM cat_subgerencia WHERE id = $1';
+    const query = 'SELECT * FROM cat_subgerencia WHERE uuid = $1';
     const result = await pool.query(query, [id]);
     return result.rows[0] || null;
   }
@@ -63,4 +49,30 @@ export class CatSubgerenciaDAO {
     const insertR = await pool.query(insertQ, [nombre]);
     return insertR.rows[0].id;
   }
+
+  static async update(id: string, ducto: IcatSubgerencia) {
+  const query = `
+    UPDATE cat_subgerencia
+    SET
+      nombre = $1,
+      status = $2,
+      usuario_actualizacion = $3,
+      fecha_actualizacion = $4
+    WHERE uuid = $5
+    RETURNING *;
+  `;
+
+  const values = [
+    ducto.name,
+    ducto.status,
+    ducto.usuarioModificacion,
+    new Date(),
+    id
+  ];
+
+  const result = await pool.query(query, values);
+  return result.rows[0];
+}
+
+
 }

@@ -1,5 +1,5 @@
 import { pool } from '../../config/db';
-import  IcatSuperintendencia  from '../interfaces/catSuperintendencia.interface';
+import IcatSuperintendencia from '../interfaces/catSuperintendencia.interface';
 
 export class CatSuperintendenciaDAO {
   static async create(body: IcatSuperintendencia): Promise<any> {
@@ -8,31 +8,34 @@ export class CatSuperintendenciaDAO {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;
     `;
-    const values = [body.nombre, new Date(), body.usuarioCreacion, 'true', body.uuidSubgerencia, body.siglas];
+    const values = [body.name, new Date(), body.usuarioCreacion, 'true', body.uuidSubgerencia, body.siglas];
     const result = await pool.query(query, values);
     return result.rows[0];
   }
 
-  static async update(body: IcatSuperintendencia): Promise<any> {
-    const query = `
-      UPDATE cat_superintendencia
-      SET nombre = $1,
-          fecha_actualizacion = $2,
-          usuario_actualizacion = $3,
-          status = $4
-      WHERE id = $5
-      RETURNING *;
-    `;
-    const values = [
-      body.nombre,
-      new Date(),
-      body.fechaModificacion || '',
-      body.estatus,
-      body.id,
-    ];
-    const result = await pool.query(query, values);
-    return result.rows[0];
-  }
+  static async update(id: string, ducto: IcatSuperintendencia) {
+  const query = `
+    UPDATE cat_ducto
+    SET
+      nombre = $1,
+      status = $2,
+      usuario_actualizacion = $3,
+      fecha_actualizacion = $4
+    WHERE uuid = $5
+    RETURNING *;
+  `;
+
+  const values = [
+    ducto.name,
+    ducto.status,
+    ducto.usuarioModificacion,
+    new Date(),
+    id
+  ];
+
+  const result = await pool.query(query, values);
+  return result.rows[0];
+}
 
   static async findAll(): Promise<IcatSuperintendencia[]> {
     const query = 'SELECT uuid, name, status FROM cat_superintendencia';
@@ -41,13 +44,19 @@ export class CatSuperintendenciaDAO {
   }
 
   static async findById(id: string): Promise<IcatSuperintendencia | null> {
-    const query = 'SELECT * FROM cat_superintendencia WHERE id = $1';
+    const query = 'SELECT * FROM cat_superintendencia WHERE uuid = $1';
     const result = await pool.query(query, [id]);
     return result.rows[0] || null;
   }
 
-   /** Busca por nombre o crea uno nuevo, retornando su ID */
-   static async getOrCreateByName(nombre: string): Promise<number> {
+  static async findByName(nombre: string): Promise<IcatSuperintendencia | null> {
+    console.log("va a ejecutar el query")
+    const result = await pool.query('SELECT * FROM cat_superintendencia WHERE nombre = $1 LIMIT 1', [nombre]);
+    return result.rows[0] || null;
+  }
+
+  /** Busca por nombre o crea uno nuevo, retornando su ID */
+  static async getOrCreateByName(nombre: string): Promise<number> {
     // 1) Intentar encontrar
     const checkQ = `SELECT id FROM cat_superintendencia WHERE nombre = $1`;
     const checkR = await pool.query(checkQ, [nombre]);

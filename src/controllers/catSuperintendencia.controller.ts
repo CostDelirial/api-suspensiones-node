@@ -47,38 +47,34 @@ export default class CatSuperintendenciaController {
     }
   }
 
-  async delete(req: Request, res: Response): Promise<any> {
-    try {
-      const { id } = req.body;
-      const token = req.headers.authorization;
+  async updateCatSuperintendencia(req: Request, res: Response): Promise<any> {
+  try {
+    const { uuid } = req.params;
 
-      if (!token || !id) {
-        return ResponseHelper.error(res, 'Token o ID faltante', null, 400);
-      }
+    req.body.usuarioModificacion = req.body.user_client.payload.ficha;
 
-      const jwtUtil = new JWTUtil();
-      const userService = new UserService();
-      const decoded = await jwtUtil.decodeToken(token) as any;
+    const response = await CatSuperintendenciaService.updateCatSuperintendencia(uuid, req.body);
 
-      const infoUser = await userService.getUserById(decoded.id);
-      const gerenciaResult = await CatSuperintendenciaService.getCatSuperintendencia(id);
-
-      if (!gerenciaResult.ok || !gerenciaResult.response) {
-        return ResponseHelper.error(res, 'Superintendencia no encontrada', null, 404);
-      }
-
-      const gerencia = gerenciaResult.response;
-      gerencia.estatus = gerencia.estatus === false ? true : false;
-      gerencia.fechaModificacion = new Date();
-      if (infoUser != null)
-        gerencia.usuarioModificacion = infoUser.ficha.toString(); // Asegura string
-
-      const updateResult = await CatSuperintendenciaService.update(gerencia);
-
-      return ResponseHelper.success(res, 'Superintendencia actualizada', updateResult.response, updateResult.code);
-    } catch (error) {
-      logger.error(`[controller/catSuperintendencia/delete]: ${error}`);
-      return ResponseHelper.error(res, 'Error al eliminar gerencia', null, 500);
+    if (!response.ok) {
+      return res.status(response.code || 400).json({
+        ok: false,
+        message: response.message,
+        response: null,
+        code: response.code || 400
+      });
     }
+
+    return res.status(200).json({
+      ok: true,
+      message: 'Actualizado correctamente el Superintendencia: ' + response.response?.nombre,
+      response: response.response,
+      code: 200
+    });
+
+  } catch (error) {
+    logger.error(`[Error/controller/updateCatSuperintendencia]: ${error}`);
+    return ResponseHelper.error(res, 'Internal Server Error', null, 500);
   }
+}
+  
 }

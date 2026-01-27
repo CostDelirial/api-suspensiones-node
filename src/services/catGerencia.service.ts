@@ -23,24 +23,49 @@ export class CatGerenciaService {
     }
   }
 
-  static async update(body: ICatGerencia) {
-    try {
-      const updatedGerencia = await CatGerenciaDAO.update(body);
-      return {
-        ok: true,
-        message: 'Gerencia actualizada correctamente',
-        response: updatedGerencia,
-        code: 200
-      };
-    } catch (error) {
-      logger.error(`[service/catGerencia/update]: ${error}`);
+  static async updateCatGerencia(id: string, body: ICatGerencia) {
+  try {
+    console.log("Actualizando ducto ID:", id, "Body:", body);
+
+    const ductoActual = await CatGerenciaDAO.findById(id);
+    if (!ductoActual) {
       return {
         ok: false,
-        message: 'Error al actualizar la gerencia',
-        code: 500
+        message: 'El ducto no existe.',
+        code: 404
       };
     }
+
+    // Validar nombre duplicado solo si cambia
+    if (body.name && body.name !== ductoActual.name) {
+      const exists = await CatGerenciaDAO.findByName(body.name);
+      if (exists) {
+        return {
+          ok: false,
+          message: `La gerencia ${body.name} ya está registrado.`,
+          code: 409
+        };
+      }
+    }
+
+    const updatedGerencia = await CatGerenciaDAO.update(id, body);
+
+    return {
+      ok: true,
+      message: 'Actualizado correctamente',
+      response: updatedGerencia,
+      code: 200
+    };
+
+  } catch (error) {
+    logger.error(`[service/catGerencia/update]: ${error}`);
+    return {
+      ok: false,
+      message: 'Error interno al actualizar',
+      code: 500
+    };
   }
+}
 
   static async getCatGerencias() {
     try {

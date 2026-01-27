@@ -6,12 +6,12 @@ export class CatRoleService {
   static async createCatRole(body: ICatRole) {
     try {
       console.log("Va a buscar si existe lo que intenta ingresar: ", body)
-      const exists = await CatRoleDAO.findByName(body.nombre);
+      const exists = await CatRoleDAO.findByName(body.name);
       console.log("exists: ", exists)
       if (exists) {
         return {
           ok: false,
-          message: `El nivel ${body.nombre} ya está registrado.`,
+          message: `El nivel ${body.name} ya está registrado.`,
           code: 409
         };
       }
@@ -53,24 +53,49 @@ export class CatRoleService {
     }
   }
 
-  static async updateRole(puesto: ICatRole) {
-    try {
-      const updated = await CatRoleDAO.update(puesto);
-      return {
-        ok: true,
-        message: 'Actualizado correctamente',
-        response: updated,
-        code: 200
-      };
-    } catch (error) {
-      logger.error(`[service/catRole/update]: ${error}`);
+ static async updateCatRole(id: string, body: ICatRole) {
+  try {
+    console.log("Actualizando updateCatRole ID:", id, "Body:", body);
+
+    const ductoActual = await CatRoleDAO.findById(id);
+    if (!ductoActual) {
       return {
         ok: false,
-        message: 'Error al actualizar',
-        code: 500
+        message: 'El rol no existe.',
+        code: 404
       };
     }
+
+    // Validar nombre duplicado solo si cambia
+    if (body.name && body.name !== ductoActual.name) {
+      const exists = await CatRoleDAO.findByName(body.name);
+      if (exists) {
+        return {
+          ok: false,
+          message: `El ROL ${body.name} ya está registrado.`,
+          code: 409
+        };
+      }
+    }
+
+    const updatedRole = await CatRoleDAO.update(id, body);
+
+    return {
+      ok: true,
+      message: 'Actualizado correctamente',
+      response: updatedRole,
+      code: 200
+    };
+
+  } catch (error) {
+    logger.error(`[service/catRole/update]: ${error}`);
+    return {
+      ok: false,
+      message: 'Error interno al actualizar',
+      code: 500
+    };
   }
+}
 
   static async getCatRole(id: string) {
     try {

@@ -5,17 +5,14 @@ import logger from '../../lib/logger';
 export class CatDuctoService {
   static async createCatDucto(body: ICatDucto) {
     try {
-      console.log("Va a buscar si existe lo que intenta ingresar: ", body)
-      const exists = await CatDuctoDAO.findByName(body.nombre);
-      console.log("exists: ", exists)
+      const exists = await CatDuctoDAO.findByName(body.name);
       if (exists) {
         return {
           ok: false,
-          message: `El nivel ${body.nombre} ya está registrado.`,
+          message: `El nivel ${body.name} ya está registrado.`,
           code: 409
         };
       }
-console.log("pasoo: ", body)
       const newDucto = await CatDuctoDAO.create(body);
       return {
         ok: true,
@@ -53,20 +50,45 @@ console.log("pasoo: ", body)
     }
   }
 
-  static async updateDucto(ducto: ICatDucto) {
+  static async updateCatDucto(id: string, body: ICatDucto) {
     try {
-      const updated = await CatDuctoDAO.update(ducto);
+      console.log("Actualizando ducto ID:", id, "Body:", body);
+
+      const ductoActual = await CatDuctoDAO.findById(id);
+      if (!ductoActual) {
+        return {
+          ok: false,
+          message: 'El ducto no existe.',
+          code: 404
+        };
+      }
+
+      // Validar nombre duplicado solo si cambia
+      if (body.name && body.name !== ductoActual.name) {
+        const exists = await CatDuctoDAO.findByName(body.name);
+        if (exists) {
+          return {
+            ok: false,
+            message: `El ducto ${body.name} ya está registrado.`,
+            code: 409
+          };
+        }
+      }
+
+      const updatedDucto = await CatDuctoDAO.update(id, body);
+
       return {
         ok: true,
         message: 'Actualizado correctamente',
-        response: updated,
+        response: updatedDucto,
         code: 200
       };
+
     } catch (error) {
       logger.error(`[service/catDucto/update]: ${error}`);
       return {
         ok: false,
-        message: 'Error al actualizar',
+        message: 'Error interno al actualizar',
         code: 500
       };
     }

@@ -48,9 +48,9 @@ export class CatDuctoDAO {
     `;
 
       const ductoValues = [
-        ducto.nombre,
+        ducto.name,
         ducto.usuarioCreacion,
-        ducto.estatus ?? true,
+        ducto.status ?? true,
         new Date()
       ];
 
@@ -111,14 +111,27 @@ export class CatDuctoDAO {
   }
 
 
-  static async update(ducto: ICatDucto): Promise<ICatDucto> {
-    const query = `
-      UPDATE cat_ducto
-      SET nombre = $1, nivel = $2, usuario_actualizacion = $3, fecha_actualizacion = NOW(), status = $4
-      WHERE id = $5
-      RETURNING *`;
-    const values = [ducto.nombre, ducto.usuarioModificacion, ducto.estatus, ducto.id];
-    const result = await pool.query(query, values);
-    return result.rows[0];
-  }
+  static async update(id: string, ducto: ICatDucto) {
+  const query = `
+    UPDATE cat_ducto
+    SET
+      nombre = $1,
+      status = $2,
+      usuario_actualizacion = $3,
+      fecha_actualizacion = $4
+    WHERE uuid = $5
+    RETURNING *;
+  `;
+
+  const values = [
+    ducto.name,
+    ducto.status,
+    ducto.usuarioModificacion,
+    new Date(),
+    id
+  ];
+
+  const result = await pool.query(query, values);
+  return result.rows[0];
+}
 }

@@ -42,4 +42,8 @@ export default class EncryptioClass {
         return bcrypt.compare(plainPassword, hashPassword)
     }
 
+    async comparePassword(plainPassword: string, hashPassword: string): Promise<boolean>{
+        return bcrypt.compare(plainPassword, hashPassword)
+    }
+
 }

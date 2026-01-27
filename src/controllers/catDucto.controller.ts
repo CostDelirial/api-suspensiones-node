@@ -22,7 +22,7 @@ export default class CatDuctoController {
             }
             return res.status(201).json({
                 ok: true,
-                message: 'Creado correctamente el ducto: ' + response.response?.nombre,
+                message: 'Creado correctamente el ducto: ' + response.response?.name,
                 response: response.response,
                 code: 201
             });
@@ -49,33 +49,34 @@ export default class CatDuctoController {
         }
     }
 
-    async delete(req: Request, res: Response): Promise<any> {
-        try {
-            const { _id } = req.body;
-            const token = req.headers.authorization;
+    async updateCatDucto(req: Request, res: Response): Promise<any> {
+  try {
+    const { id } = req.params;
 
-            if (!_id || !token) {
-                return ResponseHelper.error(res, 'Missing ID or token', null, 400);
-            }
+    req.body.usuarioModificacion = req.body.user_client.payload.ficha;
 
-            const jwtUtil = new JWTUtil();
-            const userService = new UserService();
+    const response = await CatDuctoService.updateCatDucto(id, req.body);
 
-            const user = await jwtUtil.decodeToken(token) as any;
-            const infoUser = await userService.getUserById(user.id);
-            const infoDucto = await CatDuctoService.getCatDucto(_id) as any;
-
-            infoDucto.status = infoDucto.status === 'inactive' ? 'active' : 'inactive';
-            infoDucto.fechaActualizacion = new Date();
-            if (infoUser != null)
-                infoDucto.usuarioActualizacion = infoUser.ficha;
-
-            const updated = await CatDuctoService.updateDucto(infoDucto);
-
-            return ResponseHelper.success(res, 'Ducto updated successfully', updated, 200);
-        } catch (error) {
-            logger.error(`[Error/controller/deleteCatDucto]: ${error}`);
-            return ResponseHelper.error(res, 'Internal Server Error', null, 500);
-        }
+    if (!response.ok) {
+      return res.status(response.code || 400).json({
+        ok: false,
+        message: response.message,
+        response: null,
+        code: response.code || 400
+      });
     }
+
+    return res.status(200).json({
+      ok: true,
+      message: 'Actualizado correctamente el ducto: ' + response.response?.nombre,
+      response: response.response,
+      code: 200
+    });
+
+  } catch (error) {
+    logger.error(`[Error/controller/updateCatDucto]: ${error}`);
+    return ResponseHelper.error(res, 'Internal Server Error', null, 500);
+  }
+}
+    
 }

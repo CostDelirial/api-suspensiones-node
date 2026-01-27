@@ -7,6 +7,6 @@ const catPuestoController = new CatPuestoController()
 
 catPuestoRouter.post('/', AuthMiddleware.autetication, catPuestoController.createCatPuesto.bind(catPuestoController))
 catPuestoRouter.get('/', AuthMiddleware.autetication, catPuestoController.getCatPuestos.bind(catPuestoController))
-catPuestoRouter.post('/delete', catPuestoController.delete.bind(catPuestoController))
+catPuestoRouter.post('/update/:uuid', AuthMiddleware.autetication, catPuestoController.updateCatPuesto.bind(catPuestoController))
 
 export default catPuestoRouter;

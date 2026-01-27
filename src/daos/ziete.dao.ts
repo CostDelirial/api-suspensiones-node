@@ -143,7 +143,7 @@ ORDER BY n_ducto;
     const aux = new Date(ffin)
     aux.setDate(aux.getDate() + 1)
     const fechaFinAux = aux.toISOString().split('T')[0]
-    const fechaFin = `${fechaFinAux} 05:00:00`;
+    const fechaFin = `${fechaFinAux} 04:59:00`;
 
     const result = await pool.query(query, [fechaInicio, fechaFin]);
     return result.rows;

@@ -7,6 +7,6 @@ const catSuperintendenciaController = new CatSuperintendenciaController()
 
 catSuperintendenciaRouter.post('/', AuthMiddleware.autetication, catSuperintendenciaController.createCatSuperintendencia.bind(catSuperintendenciaController))
 catSuperintendenciaRouter.get('/', AuthMiddleware.autetication, catSuperintendenciaController.getCatSuperintendencias.bind(catSuperintendenciaController))
-catSuperintendenciaRouter.post('/delete', catSuperintendenciaController.delete.bind(catSuperintendenciaController))
+catSuperintendenciaRouter.post('/update/:uuid', AuthMiddleware.autetication, catSuperintendenciaController.updateCatSuperintendencia.bind(catSuperintendenciaController))
 
 export default catSuperintendenciaRouter;

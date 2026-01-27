@@ -22,7 +22,7 @@ export default class CatPuestoController {
             }
             return res.status(201).json({
                 ok: true,
-                message: 'Creado correctamente el puesto: ' + response.response?.nombre,
+                message: 'Creado correctamente el puesto: ' + response.response?.name,
                 response: response.response,
                 code: 201
             });
@@ -48,33 +48,34 @@ export default class CatPuestoController {
         }
     }
 
-    async delete(req: Request, res: Response): Promise<any> {
+    async updateCatPuesto(req: Request, res: Response): Promise<any> {
         try {
-            const { _id } = req.body;
-            const token = req.headers.authorization;
+            const { uuid } = req.params;
 
-            if (!_id || !token) {
-                return ResponseHelper.error(res, 'Missing ID or token', null, 400);
+            req.body.usuarioModificacion = req.body.user_client.payload.ficha;
+
+            const response = await CatPuestoService.updateCatPuesto(uuid, req.body);
+
+            if (!response.ok) {
+                return res.status(response.code || 400).json({
+                    ok: false,
+                    message: response.message,
+                    response: null,
+                    code: response.code || 400
+                });
             }
 
-            const jwtUtil = new JWTUtil();
-            const userService = new UserService();
+            return res.status(200).json({
+                ok: true,
+                message: 'Actualizado correctamente el ducto: ' + response.response?.nombre,
+                response: response.response,
+                code: 200
+            });
 
-            const user = await jwtUtil.decodeToken(token) as any;
-            const infoUser = await userService.getUserById(user.id);
-            const infoPuesto = await CatPuestoService.getCatPuesto(_id) as any;
-
-            infoPuesto.status = infoPuesto.status === 'inactive' ? 'active' : 'inactive';
-            infoPuesto.fechaActualizacion = new Date();
-            if (infoUser != null)
-                infoPuesto.usuarioActualizacion = infoUser.ficha;
-
-            const updated = await CatPuestoService.updatePuesto(infoPuesto);
-
-            return ResponseHelper.success(res, 'Puesto updated successfully', updated, 200);
         } catch (error) {
-            logger.error(`[Error/controller/deleteCatPuesto]: ${error}`);
+            logger.error(`[Error/controller/updateCatPuesto]: ${error}`);
             return ResponseHelper.error(res, 'Internal Server Error', null, 500);
         }
     }
+
 }

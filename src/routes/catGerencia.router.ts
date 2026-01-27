@@ -7,6 +7,6 @@ const catGerenciaController = new CatGerenciaController()
 
 catGerenciaRouter.post('/', AuthMiddleware.autetication, catGerenciaController.createCatGerencia.bind(catGerenciaController))
 catGerenciaRouter.get('/', AuthMiddleware.autetication, catGerenciaController.getCatGerencias.bind(catGerenciaController))
-catGerenciaRouter.post('/delete', catGerenciaController.delete.bind(catGerenciaController))
+catGerenciaRouter.post('/update/:uuid', AuthMiddleware.autetication, catGerenciaController.updateCatGerencia.bind(catGerenciaController))
 
 export default catGerenciaRouter;

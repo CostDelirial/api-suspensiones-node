@@ -6,7 +6,7 @@ export class CatPuestoService {
   static async createCatPuesto(body: ICatPuesto) {
     try {
       console.log("Va a buscar si existe lo que intenta ingresar: ", body)
-      const exists = await CatPuestoDAO.findByNivelName(body.nivel, body.nombre);
+      const exists = await CatPuestoDAO.findByNivelName(body.nivel, body.name);
       console.log("exists: ", exists)
       if (exists) {
         return {
@@ -53,24 +53,50 @@ console.log("pasoo: ", body)
     }
   }
 
-  static async updatePuesto(puesto: ICatPuesto) {
-    try {
-      const updated = await CatPuestoDAO.update(puesto);
-      return {
-        ok: true,
-        message: 'Actualizado correctamente',
-        response: updated,
-        code: 200
-      };
-    } catch (error) {
-      logger.error(`[service/catPuesto/update]: ${error}`);
+  
+static async updateCatPuesto(id: string, body: ICatPuesto) {
+  try {
+    console.log("Actualizando ducto ID:", id, "Body:", body);
+
+    const ductoActual = await CatPuestoDAO.findById(id);
+    if (!ductoActual) {
       return {
         ok: false,
-        message: 'Error al actualizar',
-        code: 500
+        message: 'El puesto no existe.',
+        code: 404
       };
     }
+
+    // Validar nombre duplicado solo si cambia
+    if (body.name && body.name !== ductoActual.name) {
+      const exists = await CatPuestoDAO.findByName(body.name);
+      if (exists) {
+        return {
+          ok: false,
+          message: `El nivel ${body.name} ya está registrado.`,
+          code: 409
+        };
+      }
+    }
+
+    const updatedPuesto = await CatPuestoDAO.update(id, body);
+
+    return {
+      ok: true,
+      message: 'Actualizado correctamente',
+      response: updatedPuesto,
+      code: 200
+    };
+
+  } catch (error) {
+    logger.error(`[service/catPuesto/update]: ${error}`);
+    return {
+      ok: false,
+      message: 'Error interno al actualizar',
+      code: 500
+    };
   }
+}
 
   static async getCatPuesto(id: string) {
     try {

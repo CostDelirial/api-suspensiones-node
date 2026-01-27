@@ -22,24 +22,49 @@ export class CatSubgerenciaService {
     }
   }
 
-  static async update(body: IcatSubgerencia) {
-    try {
-      const updatedGerencia = await CatSubgerenciaDAO.update(body);
-      return {
-        ok: true,
-        message: 'Subgerencia actualizada correctamente',
-        response: updatedGerencia,
-        code: 200
-      };
-    } catch (error) {
-      logger.error(`[service/catSubgerencia/update]: ${error}`);
+  static async updateCatSubgerencia(id: string, body: IcatSubgerencia) {
+  try {
+    console.log("Actualizando Subgerencia ID:", id, "Body:", body);
+
+    const subgerenciaActual = await CatSubgerenciaDAO.findById(id);
+    if (!subgerenciaActual) {
       return {
         ok: false,
-        message: 'Error al actualizar la subgerencias',
-        code: 500
+        message: 'El Subgerencia no existe.',
+        code: 404
       };
     }
+
+    // Validar nombre duplicado solo si cambia
+    if (body.name && body.name !== subgerenciaActual.name) {
+      const exists = await CatSubgerenciaDAO.findByName(body.name);
+      if (exists) {
+        return {
+          ok: false,
+          message: `El Subgerencia ${body.name} ya está registrado.`,
+          code: 409
+        };
+      }
+    }
+
+    const updatedSubgerencia = await CatSubgerenciaDAO.update(id, body);
+
+    return {
+      ok: true,
+      message: 'Actualizado correctamente',
+      response: updatedSubgerencia,
+      code: 200
+    };
+
+  } catch (error) {
+    logger.error(`[service/catSubgerencia/update]: ${error}`);
+    return {
+      ok: false,
+      message: 'Error interno al actualizar',
+      code: 500
+    };
   }
+}
 
   static async getCatSubgerencias() {
     try {

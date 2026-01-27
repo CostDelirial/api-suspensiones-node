@@ -47,33 +47,35 @@ export default class CatMotivoController {
         }
     }
 
-    async delete(req: Request, res: Response): Promise<any> {
-        try {
-            const { _id } = req.body;
-            const token = req.headers.authorization;
+    async updateCatMotivo(req: Request, res: Response): Promise<any> {
+  try {
+    const { id } = req.params;
 
-            if (!_id || !token) {
-                return ResponseHelper.error(res, 'Missing ID or token', null, 400);
-            }
+    req.body.usuarioModificacion = req.body.user_client.payload.ficha;
 
-            const jwtUtil = new JWTUtil();
-            const userService = new UserService();
+    const response = await CatMotivoService.updateCatMotivo(id, req.body);
 
-            const user = await jwtUtil.decodeToken(token) as any;
-            const infoUser = await userService.getUserById(user.id);
-            const infoMotivo = await CatMotivoService.getCatMotivo(_id) as any;
-
-            infoMotivo.status = infoMotivo.status === 'inactive' ? 'active' : 'inactive';
-            infoMotivo.fechaActualizacion = new Date();
-            if (infoUser != null)
-                infoMotivo.usuarioActualizacion = infoUser.ficha;
-
-            const updated = await CatMotivoService.updateMotivo(infoMotivo);
-
-            return ResponseHelper.success(res, 'Motivo updated successfully', updated, 200);
-        } catch (error) {
-            logger.error(`[Error/controller/deleteCatMotivo]: ${error}`);
-            return ResponseHelper.error(res, 'Internal Server Error', null, 500);
-        }
+    if (!response.ok) {
+      return res.status(response.code || 400).json({
+        ok: false,
+        message: response.message,
+        response: null,
+        code: response.code || 400
+      });
     }
+
+    return res.status(200).json({
+      ok: true,
+      message: 'Actualizado correctamente el ducto: ' + response.response?.nombre,
+      response: response.response,
+      code: 200
+    });
+
+  } catch (error) {
+    logger.error(`[Error/controller/updateCatMotivo]: ${error}`);
+    return ResponseHelper.error(res, 'Internal Server Error', null, 500);
+  }
+}
+    
+
 }

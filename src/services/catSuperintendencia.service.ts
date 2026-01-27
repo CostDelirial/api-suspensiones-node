@@ -22,24 +22,50 @@ export class CatSuperintendenciaService {
     }
   }
 
-  static async update(body: IcatSuperintendencia) {
-    try {
-      const updatedGerencia = await CatSuperintendenciaDAO.update(body);
-      return {
-        ok: true,
-        message: 'Gerencia actualizada correctamente',
-        response: updatedGerencia,
-        code: 200
-      };
-    } catch (error) {
-      logger.error(`[service/catSuperintendencia/update]: ${error}`);
+  
+static async updateCatSuperintendencia(id: string, body: IcatSuperintendencia) {
+  try {
+    console.log("Actualizando superintendencia ID:", id, "Body:", body);
+
+    const superintendenciaActual = await CatSuperintendenciaDAO.findById(id);
+    if (!superintendenciaActual) {
       return {
         ok: false,
-        message: 'Error al actualizar la gerencia',
-        code: 500
+        message: 'El superintendencia no existe.',
+        code: 404
       };
     }
+
+    // Validar nombre duplicado solo si cambia
+    if (body.name && body.name !== superintendenciaActual.name) {
+      const exists = await CatSuperintendenciaDAO.findByName(body.name);
+      if (exists) {
+        return {
+          ok: false,
+          message: `El superintendencia ${body.name} ya está registrado.`,
+          code: 409
+        };
+      }
+    }
+
+    const updatedSuperintendencia = await CatSuperintendenciaDAO.update(id, body);
+
+    return {
+      ok: true,
+      message: 'Actualizado correctamente',
+      response: updatedSuperintendencia,
+      code: 200
+    };
+
+  } catch (error) {
+    logger.error(`[service/catSuperintendencia/update]: ${error}`);
+    return {
+      ok: false,
+      message: 'Error interno al actualizar',
+      code: 500
+    };
   }
+}
 
   static async getCatSuperintendencias() {
     try {

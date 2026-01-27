@@ -47,38 +47,34 @@ export default class CatSubgerenciaController {
     }
   }
 
-  async delete(req: Request, res: Response): Promise<any> {
+  async updateCatSubgerencia(req: Request, res: Response): Promise<any> {
     try {
-      const { id } = req.body;
-      const token = req.headers.authorization;
+      const { uuid } = req.params;
 
-      if (!token || !id) {
-        return ResponseHelper.error(res, 'Token o ID faltante', null, 400);
+      req.body.usuarioModificacion = req.body.user_client.payload.ficha;
+
+      const response = await CatSubgerenciaService.updateCatSubgerencia(uuid, req.body);
+
+      if (!response.ok) {
+        return res.status(response.code || 400).json({
+          ok: false,
+          message: response.message,
+          response: null,
+          code: response.code || 400
+        });
       }
 
-      const jwtUtil = new JWTUtil();
-      const userService = new UserService();
-      const decoded = await jwtUtil.decodeToken(token) as any;
+      return res.status(200).json({
+        ok: true,
+        message: 'Actualizado correctamente el ducto: ' + response.response?.nombre,
+        response: response.response,
+        code: 200
+      });
 
-      const infoUser = await userService.getUserById(decoded.id);
-      const gerenciaResult = await CatSubgerenciaService.getCatSubgerencia(id);
-
-      if (!gerenciaResult.ok || !gerenciaResult.response) {
-        return ResponseHelper.error(res, 'Gerencia no encontrada', null, 404);
-      }
-
-      const gerencia = gerenciaResult.response;
-      gerencia.estatus = gerencia.estatus === false ? true : false;
-      gerencia.fechaModificacion = new Date();
-      if (infoUser != null)
-        gerencia.usuarioModificacion = infoUser.ficha.toString(); // Asegura string
-
-      const updateResult = await CatSubgerenciaService.update(gerencia);
-
-      return ResponseHelper.success(res, 'Gerencia actualizada', updateResult.response, updateResult.code);
     } catch (error) {
-      logger.error(`[controller/catSubgerencia/delete]: ${error}`);
-      return ResponseHelper.error(res, 'Error al eliminar gerencia', null, 500);
+      logger.error(`[Error/controller/updateCatSubgerencia]: ${error}`);
+      return ResponseHelper.error(res, 'Internal Server Error', null, 500);
     }
   }
+
 }

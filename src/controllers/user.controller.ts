@@ -64,4 +64,60 @@ export default class UserController {
         }
     }
 
+    async updateUser(req: Request, res: Response): Promise<any> {
+        try {
+            const { uuid } = req.params;
+            req.body.usuarioActualizacion = req.body.user_client.payload.ficha;
+            console.log("body enviado: ", req.body)
+            const response = await UserService.updateUser(uuid, req.body);
+            if (!response.ok) {
+                return res.status(response.code || 400).json({
+                    ok: false,
+                    message: response.message,
+                    response: null,
+                    code: response.code || 400
+                });
+            }
+            return res.status(200).json({
+                ok: true,
+                message: 'Usuario actualizado correctamente',
+                response: response.response,
+                code: 200
+            });
+        } catch (error) {
+            logger.error(`[Error/controller/updateUser]: ${error}`);
+            return ResponseHelper.error(res, 'Internal Server Error', null, 500);
+        }
+    }
+
+    async updatePass(req: Request, res: Response): Promise<any> {
+        try {
+            const { uuid } = req.params;
+            req.body.usuarioActualizacion = req.body.user_client.payload.ficha;
+
+            const response = await UserService.updatePass(uuid, req.body);
+
+            if (!response.ok) {
+                return res.status(response.code || 400).json({
+                    ok: false,
+                    message: response.message,
+                    response: null,
+                    code: response.code || 400
+                });
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: 'Actualizado correctamente el passUser: ' + response.response?.name,
+                response: response.response,
+                code: 200
+            });
+
+        } catch (error) {
+            logger.error(`[Error/controller/updateUser]: ${error}`);
+            return ResponseHelper.error(res, 'Internal Server Error', null, 500);
+        }
+    }
+
+
 }

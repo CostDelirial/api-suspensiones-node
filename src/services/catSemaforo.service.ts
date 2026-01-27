@@ -6,12 +6,12 @@ export class CatSemaforoService {
   static async createCatSemaforo(body: ICatSemaforo) {
     try {
       console.log("Va a buscar si existe lo que intenta ingresar: ", body)
-      const exists = await CatSemaforoDAO.findByName(body.nombre);
+      const exists = await CatSemaforoDAO.findByName(body.name);
       console.log("exists: ", exists)
       if (exists) {
         return {
           ok: false,
-          message: `El ${body.nombre} ya está registrado.`,
+          message: `El ${body.name} ya está registrado.`,
           code: 409
         };
       }
@@ -77,24 +77,49 @@ export class CatSemaforoService {
     }
   }
 
-  static async updateSemaforo(puesto: ICatSemaforo) {
-    try {
-      const updated = await CatSemaforoDAO.update(puesto);
-      return {
-        ok: true,
-        message: 'Actualizado correctamente',
-        response: updated,
-        code: 200
-      };
-    } catch (error) {
-      logger.error(`[service/catSemaforo/update]: ${error}`);
+  static async updateCatSemaforo(id: string, body: ICatSemaforo) {
+  try {
+    console.log("Actualizando ducto ID:", id, "Body:", body);
+
+    const ductoActual = await CatSemaforoDAO.findById(id);
+    if (!ductoActual) {
       return {
         ok: false,
-        message: 'Error al actualizar',
-        code: 500
+        message: 'El ducto no existe.',
+        code: 404
       };
     }
+
+    // Validar nombre duplicado solo si cambia
+    if (body.name && body.name !== ductoActual.name) {
+      const exists = await CatSemaforoDAO.findByName(body.name);
+      if (exists) {
+        return {
+          ok: false,
+          message: `El semaforo ${body.name} ya está registrado.`,
+          code: 409
+        };
+      }
+    }
+
+    const updatedSemaforo = await CatSemaforoDAO.update(id, body);
+
+    return {
+      ok: true,
+      message: 'Actualizado correctamente',
+      response: updatedSemaforo,
+      code: 200
+    };
+
+  } catch (error) {
+    logger.error(`[service/catSemaforo/update]: ${error}`);
+    return {
+      ok: false,
+      message: 'Error interno al actualizar',
+      code: 500
+    };
   }
+}
 
   static async getCatSemaforo(id: string) {
     try {

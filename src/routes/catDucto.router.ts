@@ -7,6 +7,6 @@ const catDuctoController = new CatDuctoController()
 
 catDuctoRouter.post('/', AuthMiddleware.autetication, catDuctoController.createCatDucto.bind(catDuctoController))
 catDuctoRouter.get('/', AuthMiddleware.autetication, catDuctoController.getCatDuctos.bind(catDuctoController))
-catDuctoRouter.post('/delete', catDuctoController.delete.bind(catDuctoController))
+catDuctoRouter.post('/update/:uuid', AuthMiddleware.autetication, catDuctoController.updateCatDucto.bind(catDuctoController))
 
 export default catDuctoRouter;

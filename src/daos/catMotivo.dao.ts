@@ -14,7 +14,7 @@ export class CatMotivoDAO {
   }
 
   static async findById(id: string): Promise<ICatMotivo | null> {
-    const result = await pool.query('SELECT * FROM cat_motivo WHERE id = $1', [id]);
+    const result = await pool.query('SELECT * FROM cat_motivo WHERE uuid = $1', [id]);
     return result.rows[0] || null;
   }
 
@@ -24,21 +24,34 @@ export class CatMotivoDAO {
       INSERT INTO cat_motivo (nombre, usuario_creacion, status, fecha_creacion, logistico, uuid_semaforo)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`;
-    const values = [motivo.nombre, motivo.usuarioCreacion, motivo.estatus || 'true', new Date(), motivo.logistico, motivo.uuidSemaforo ];
+    const values = [motivo.name, motivo.usuarioCreacion, motivo.name || 'true', new Date(), motivo.logistico, motivo.uuidSemaforo ];
     console.log("values: ", values)
     const result = await pool.query(query, values);
     console.log("result: ", result)
     return result.rows[0];
   }
 
-  static async update(motivo: ICatMotivo): Promise<ICatMotivo> {
-    const query = `
-      UPDATE cat_motivo
-      SET nombre = $1, nivel = $2, usuario_actualizacion = $3, fecha_actualizacion = NOW(), status = $4
-      WHERE id = $5
-      RETURNING *`;
-    const values = [motivo.nombre, motivo.usuarioModificacion, motivo.estatus, motivo.id];
-    const result = await pool.query(query, values);
-    return result.rows[0];
-  }
+  static async update(id: string, ducto: ICatMotivo) {
+  const query = `
+    UPDATE cat_motivo
+    SET
+      nombre = $1,
+      status = $2,
+      usuario_actualizacion = $3,
+      fecha_actualizacion = $4
+    WHERE uuid = $5
+    RETURNING *;
+  `;
+
+  const values = [
+    ducto.name,
+    ducto.status,
+    ducto.usuarioModificacion,
+    new Date(),
+    id
+  ];
+
+  const result = await pool.query(query, values);
+  return result.rows[0];
+}
 }
