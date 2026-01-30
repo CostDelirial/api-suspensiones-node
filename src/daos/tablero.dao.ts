@@ -3,7 +3,7 @@ import ITablero from '../interfaces/tablero.interface';
 
 export class TableroDAO {
 
- static async findLast(uuid_ducto: string) {
+  static async findLast(uuid_ducto: string) {
     const query = `
       SELECT *
       FROM tablerocontrol
@@ -57,25 +57,29 @@ export class TableroDAO {
   }
   static async getTableroPrincipal() {
     const query = `
-      SELECT DISTINCT ON (t.uuid_ducto)
-          t.uuid,
-          t.uuid_ducto,
-          d.nombre AS ducto,
-          t.uuid_motivo,
-          m.nombre AS motivo,
-          m.logistico,
-          s.nombre AS semaforo,
-          s.color AS color,
-          to_char(t.fecha_usuario, 'DD/MM/YYYY HH24:MI') AS fecha_usuario,
-          t.status,
-          t.fecha_creacion,
-          t.usuario_creacion
-      FROM tableroControl t
-      INNER JOIN cat_ducto d ON t.uuid_ducto = d.uuid
-      INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
-      INNER JOIN cat_semaforo s ON m.uuid_semaforo = s.uuid
-      WHERE d.status = true
-      ORDER BY t.uuid_ducto, t.fecha_usuario DESC;
+      SELECT *
+FROM (
+    SELECT DISTINCT ON (t.uuid_ducto)
+        t.uuid,
+        t.uuid_ducto,
+        d.nombre AS ducto,
+        t.uuid_motivo,
+        m.nombre AS motivo,
+        m.logistico,
+        s.nombre AS semaforo,
+        s.color AS color,
+        t.fecha_usuario,
+        t.status,
+        t.fecha_creacion,
+        t.usuario_creacion
+    FROM tableroControl t
+    INNER JOIN cat_ducto d ON t.uuid_ducto = d.uuid
+    INNER JOIN cat_motivo m ON t.uuid_motivo = m.uuid
+    INNER JOIN cat_semaforo s ON m.uuid_semaforo = s.uuid
+    WHERE d.status = true
+    ORDER BY t.uuid_ducto, t.fecha_usuario DESC
+) ultimos
+ORDER BY ultimos.fecha_usuario DESC;
     `;
     const result = await pool.query(query);
     return result.rows;
@@ -183,7 +187,7 @@ export class TableroDAO {
         r.fecha_usuario,
         r.km || null,
         r.observaciones || null,
-        r.usuario_creacion ,
+        r.usuario_creacion,
         new Date(),
         true
       );
