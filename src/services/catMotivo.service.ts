@@ -9,7 +9,7 @@ export class CatMotivoService {
       if (exists) {
         return {
           ok: false,
-          message: `El nivel ${body.name} ya está registrado.`,
+          message: `El motivo ${body.name} ya está registrado.`,
           code: 409
         };
       }
@@ -58,7 +58,7 @@ export class CatMotivoService {
     if (!ductoActual) {
       return {
         ok: false,
-        message: 'El ducto no existe.',
+        message: 'El motivo no existe.',
         code: 404
       };
     }

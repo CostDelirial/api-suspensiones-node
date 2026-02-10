@@ -51,11 +51,11 @@ export default class CatDuctoController {
 
     async updateCatDucto(req: Request, res: Response): Promise<any> {
   try {
-    const { id } = req.params;
+    const { uuid } = req.params;
 
     req.body.usuarioModificacion = req.body.user_client.payload.ficha;
 
-    const response = await CatDuctoService.updateCatDucto(id, req.body);
+    const response = await CatDuctoService.updateCatDucto(uuid, req.body);
 
     if (!response.ok) {
       return res.status(response.code || 400).json({

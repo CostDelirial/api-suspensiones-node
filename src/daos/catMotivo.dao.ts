@@ -14,6 +14,7 @@ export class CatMotivoDAO {
   }
 
   static async findById(id: string): Promise<ICatMotivo | null> {
+    console.log("findById: ", id)
     const result = await pool.query('SELECT * FROM cat_motivo WHERE uuid = $1', [id]);
     return result.rows[0] || null;
   }
@@ -24,7 +25,7 @@ export class CatMotivoDAO {
       INSERT INTO cat_motivo (nombre, usuario_creacion, status, fecha_creacion, logistico, uuid_semaforo)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`;
-    const values = [motivo.name, motivo.usuarioCreacion, motivo.name || 'true', new Date(), motivo.logistico, motivo.uuidSemaforo ];
+    const values = [motivo.name, motivo.usuarioCreacion, motivo.status || 'true', new Date(), motivo.logistico, motivo.uuidSemaforo ];
     console.log("values: ", values)
     const result = await pool.query(query, values);
     console.log("result: ", result)

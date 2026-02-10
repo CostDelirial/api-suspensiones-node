@@ -49,11 +49,11 @@ export default class CatMotivoController {
 
     async updateCatMotivo(req: Request, res: Response): Promise<any> {
   try {
-    const { id } = req.params;
+    const { uuid } = req.params;
 
     req.body.usuarioModificacion = req.body.user_client.payload.ficha;
 
-    const response = await CatMotivoService.updateCatMotivo(id, req.body);
+    const response = await CatMotivoService.updateCatMotivo(uuid, req.body);
 
     if (!response.ok) {
       return res.status(response.code || 400).json({
