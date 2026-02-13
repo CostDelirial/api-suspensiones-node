@@ -66,7 +66,7 @@ export default class CatSuperintendenciaController {
 
     return res.status(200).json({
       ok: true,
-      message: 'Actualizado correctamente el Superintendencia: ' + response.response?.nombre,
+      message: 'Actualizado correctamente el Superintendencia: ' + response.response?.name,
       response: response.response,
       code: 200
     });

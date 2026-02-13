@@ -1,7 +1,7 @@
 export default interface IZiete {
     id?: number;
     uuidDucto: string; // ID DEL DUCTO
-    nDucto: string; // NOMBRE DEL DUCTO
+    nDucto: string; // name DEL DUCTO
     tOperando: string; // TIEMPO OPERANDO
     dOperando: number; // DIAS OPERANDO
     tFueraOpe: string; // TIEMPO FUERA DE OPERACION

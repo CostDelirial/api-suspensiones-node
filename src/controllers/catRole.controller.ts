@@ -67,7 +67,7 @@ export default class CatRoleController {
 
       return res.status(200).json({
         ok: true,
-        message: 'Actualizado correctamente el rol: ' + response.response?.nombre,
+        message: 'Actualizado correctamente el rol: ' + response.response?.name,
         response: response.response,
         code: 200
       });

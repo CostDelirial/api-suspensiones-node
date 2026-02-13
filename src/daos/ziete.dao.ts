@@ -10,9 +10,9 @@ export class ZieteDAO {
 
   SELECT
     t.uuid_ducto,
-    d.nombre AS n_ducto,
+    d.name AS n_ducto,
     t.fecha_usuario,
-    m.nombre AS motivo,
+    m.name AS motivo,
     m.logistico
   FROM tableroControl t
   INNER JOIN cat_ducto d ON d.uuid = t.uuid_ducto
@@ -23,9 +23,9 @@ export class ZieteDAO {
 
   SELECT
     t.uuid_ducto,
-    d.nombre AS n_ducto,
+    d.name AS n_ducto,
     t.fecha_usuario,
-    m.nombre AS motivo,
+    m.name AS motivo,
     m.logistico
   FROM tableroControl t
   INNER JOIN cat_ducto d ON d.uuid = t.uuid_ducto
@@ -162,7 +162,7 @@ ORDER BY n_ducto;
       SELECT
         t.uuid_ducto,
         t.uuid_motivo,
-        m.nombre AS motivo,
+        m.name AS motivo,
         m.logistico,
         t.fecha_usuario,
         coalesce(
@@ -181,7 +181,7 @@ ORDER BY n_ducto;
       WHERE
         t.uuid_ducto = $1
         AND t.fecha_usuario BETWEEN $3 AND $4
-        --AND m.nombre NOT IN ('OPERANDO', 'OPERANDO PARCIAL') 
+        --AND m.name NOT IN ('OPERANDO', 'OPERANDO PARCIAL') 
     ),
     calculo AS (
       SELECT
@@ -243,7 +243,7 @@ static async findTimeline(
   SELECT
     t.fecha_usuario,
     CASE
-      WHEN m.nombre IN ('OPERANDO', 'OPERANDO PARCIAL')
+      WHEN m.name IN ('OPERANDO', 'OPERANDO PARCIAL')
         THEN 'operando'
       ELSE 'suspendido'
     END AS tipo
@@ -259,7 +259,7 @@ evento_inicio AS (
   SELECT
     $2::timestamp AS fecha_usuario,
     CASE
-      WHEN m.nombre IN ('OPERANDO', 'OPERANDO PARCIAL')
+      WHEN m.name IN ('OPERANDO', 'OPERANDO PARCIAL')
         THEN 'operando'
       ELSE 'suspendido'
     END AS tipo

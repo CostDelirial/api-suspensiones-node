@@ -42,10 +42,10 @@ export class TableroDAO {
   static async findAll() {
     const query = `
       SELECT t.*, 
-             d.nombre AS ducto,
-             m.nombre AS motivo,
+             d.name AS ducto,
+             m.name AS motivo,
              m.uuid AS uuid_motivo,
-             s.nombre AS semaforo
+             s.name AS semaforo
       FROM tableroControl t
       LEFT JOIN cat_ducto d ON t.uuid_ducto = d.uuid
       LEFT JOIN cat_motivo m ON t.uuid_motivo = m.uuid
@@ -62,11 +62,11 @@ FROM (
     SELECT DISTINCT ON (t.uuid_ducto)
         t.uuid,
         t.uuid_ducto,
-        d.nombre AS ducto,
+        d.name AS ducto,
         t.uuid_motivo,
-        m.nombre AS motivo,
+        m.name AS motivo,
         m.logistico,
-        s.nombre AS semaforo,
+        s.name AS semaforo,
         s.color AS color,
         t.fecha_usuario,
         t.status,
@@ -91,11 +91,11 @@ ORDER BY ultimos.fecha_usuario DESC;
      SELECT  
           t.uuid,
           t.uuid_ducto,
-          d.nombre AS ducto,
+          d.name AS ducto,
           t.uuid_motivo,
-          m.nombre AS motivo,
+          m.name AS motivo,
           m.logistico,
-          s.nombre AS semaforo,
+          s.name AS semaforo,
           s.color AS color,
           to_char(t.fecha_usuario, 'DD/MM/YYYY HH24:MI') AS fecha_usuario,
           t.status,

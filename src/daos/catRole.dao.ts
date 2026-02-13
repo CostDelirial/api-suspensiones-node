@@ -3,13 +3,13 @@ import ICatRole from '../interfaces/catRole.interface';
 
 export class CatRoleDAO {
   static async findAll(): Promise<ICatRole[]> {
-    const result = await pool.query('SELECT uuid, nombre, status FROM cat_role ');
+    const result = await pool.query('SELECT uuid, name, status FROM cat_role ');
     return result.rows;
   }
 
-  static async findByName(nombre: string): Promise<ICatRole | null> {
+  static async findByName(name: string): Promise<ICatRole | null> {
     console.log("va a ejecutar el query")
-    const result = await pool.query('SELECT * FROM cat_role WHERE nombre = $1 LIMIT 1', [nombre]);
+    const result = await pool.query('SELECT * FROM cat_role WHERE name = $1 LIMIT 1', [name]);
     return result.rows[0] || null;
   }
 
@@ -21,7 +21,7 @@ export class CatRoleDAO {
   static async create(role: ICatRole): Promise<ICatRole> {
     console.log("DATOS del role: ",role)
     const query = `
-      INSERT INTO cat_role (nombre, usuario_creacion, status, fecha_creacion)
+      INSERT INTO cat_role (name, usuario_creacion, status, fecha_creacion)
       VALUES ($1, $2, $3, $4)
       RETURNING *`;
     const values = [role.name, role.usuarioCreacion, role.status || 'true', new Date()];
@@ -36,7 +36,7 @@ export class CatRoleDAO {
   const query = `
     UPDATE cat_role
     SET
-      nombre = $1,
+      name = $1,
       status = $2,
       usuario_actualizacion = $3,
       fecha_actualizacion = $4

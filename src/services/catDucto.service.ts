@@ -63,7 +63,7 @@ export class CatDuctoService {
         };
       }
 
-      // Validar nombre duplicado solo si cambia
+      // Validar name duplicado solo si cambia
       if (body.name && body.name !== ductoActual.name) {
         const exists = await CatDuctoDAO.findByName(body.name);
         if (exists) {

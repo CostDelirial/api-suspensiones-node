@@ -18,7 +18,7 @@ export class CatGerenciaDAO {
   const query = `
     UPDATE cat_gerencia
     SET
-      nombre = $1,
+      name = $1,
       status = $2,
       usuario_actualizacion = $3,
       fecha_actualizacion = $4
@@ -54,8 +54,8 @@ export class CatGerenciaDAO {
   }
 
   
-    static async findByName(nombre: string): Promise<ICatGerencia | null> {
-      const result = await pool.query('SELECT * FROM cat_gerencia WHERE nombre = $1 LIMIT 1', [nombre]);
+    static async findByName(name: string): Promise<ICatGerencia | null> {
+      const result = await pool.query('SELECT * FROM cat_gerencia WHERE name = $1 LIMIT 1', [name]);
       return result.rows[0] || null;
     }
 

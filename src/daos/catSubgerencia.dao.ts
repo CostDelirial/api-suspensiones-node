@@ -19,9 +19,9 @@ export class CatSubgerenciaDAO {
     return result.rows;
   }
 
-   static async findByName(nombre: string): Promise<IcatSubgerencia | null> {
+   static async findByName(name: string): Promise<IcatSubgerencia | null> {
       console.log("va a ejecutar el query")
-      const result = await pool.query('SELECT * FROM cat_subgerencia WHERE nombre = $1 LIMIT 1', [nombre]);
+      const result = await pool.query('SELECT * FROM cat_subgerencia WHERE name = $1 LIMIT 1', [name]);
       return result.rows[0] || null;
     }
   
@@ -32,21 +32,21 @@ export class CatSubgerenciaDAO {
     return result.rows[0] || null;
   }
 
-   /** Busca por nombre o crea uno nuevo, retornando su ID */
-   static async getOrCreateByName(nombre: string): Promise<number> {
+   /** Busca por name o crea uno nuevo, retornando su ID */
+   static async getOrCreateByName(name: string): Promise<number> {
     // 1) Intentar encontrar
-    const checkQ = `SELECT id FROM cat_subgerencia WHERE nombre = $1`;
-    const checkR = await pool.query(checkQ, [nombre]);
+    const checkQ = `SELECT id FROM cat_subgerencia WHERE name = $1`;
+    const checkR = await pool.query(checkQ, [name]);
     if (checkR.rows.length) {
       return checkR.rows[0].id;
     }
     // 2) Si no existe, crear
     const insertQ = `
-      INSERT INTO cat_subgerencia (nombre, fecha_creacion, usuario_creacion, status)
+      INSERT INTO cat_subgerencia (name, fecha_creacion, usuario_creacion, status)
       VALUES ($1, NOW(), 'bulk-upload', 'active')
       RETURNING id
     `;
-    const insertR = await pool.query(insertQ, [nombre]);
+    const insertR = await pool.query(insertQ, [name]);
     return insertR.rows[0].id;
   }
 
@@ -54,7 +54,7 @@ export class CatSubgerenciaDAO {
   const query = `
     UPDATE cat_subgerencia
     SET
-      nombre = $1,
+      name = $1,
       status = $2,
       usuario_actualizacion = $3,
       fecha_actualizacion = $4

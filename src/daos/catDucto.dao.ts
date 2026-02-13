@@ -3,12 +3,12 @@ import ICatDucto from '../interfaces/catDucto.interface';
 
 export class CatDuctoDAO {
   static async findAll(): Promise<ICatDucto[]> {
-    const result = await pool.query('SELECT uuid, nombre, status FROM cat_ducto ');
+    const result = await pool.query('SELECT uuid, name, status FROM cat_ducto ');
     return result.rows;
   }
 
-  static async findByName(nombre: string): Promise<ICatDucto | null> {
-    const result = await pool.query('SELECT * FROM cat_ducto WHERE nombre = $1 LIMIT 1', [nombre]);
+  static async findByName(name: string): Promise<ICatDucto | null> {
+    const result = await pool.query('SELECT * FROM cat_ducto WHERE name = $1 LIMIT 1', [name]);
     return result.rows[0] || null;
   }
 
@@ -19,10 +19,10 @@ export class CatDuctoDAO {
 
   /*static async create(ducto: ICatDucto): Promise<ICatDucto> {
     const query = `
-      INSERT INTO cat_ducto (nombre, usuario_creacion, status, fecha_creacion)
+      INSERT INTO cat_ducto (name, usuario_creacion, status, fecha_creacion)
       VALUES ($1, $2, $3, $4)
       RETURNING *`;
-    const values = [ducto.nombre, ducto.usuarioCreacion, ducto.estatus || 'true', new Date()];
+    const values = [ducto.name, ducto.usuarioCreacion, ducto.estatus || 'true', new Date()];
     console.log("values: ", values)
     const result = await pool.query(query, values);
     console.log("result: ", result)
@@ -38,7 +38,7 @@ export class CatDuctoDAO {
       // Crear ducto
       const insertDuctoQuery = `
       INSERT INTO cat_ducto (
-        nombre,
+        name,
         usuario_creacion,
         status,
         fecha_creacion
@@ -61,7 +61,7 @@ export class CatDuctoDAO {
       const motivoResult = await client.query(`
       SELECT uuid
       FROM cat_motivo
-      WHERE nombre = 'CARGA INICIAL'
+      WHERE name = 'CARGA INICIAL'
       LIMIT 1
     `);
 
@@ -115,7 +115,7 @@ export class CatDuctoDAO {
   const query = `
     UPDATE cat_ducto
     SET
-      nombre = $1,
+      name = $1,
       status = $2,
       usuario_actualizacion = $3,
       fecha_actualizacion = $4

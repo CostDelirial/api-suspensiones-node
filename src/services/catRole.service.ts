@@ -66,7 +66,7 @@ export class CatRoleService {
       };
     }
 
-    // Validar nombre duplicado solo si cambia
+    // Validar name duplicado solo si cambia
     if (body.name && body.name !== ductoActual.name) {
       const exists = await CatRoleDAO.findByName(body.name);
       if (exists) {

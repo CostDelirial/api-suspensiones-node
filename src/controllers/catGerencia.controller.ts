@@ -22,7 +22,7 @@ export default class CatGerenciaController {
       }
       return res.status(201).json({
         ok: true,
-        message: 'Creado correctamente la gerencia: ' + response.response?.nombre,
+        message: 'Creado correctamente la gerencia: ' + response.response?.name,
         response: response.response,
         code: 201
       });
@@ -66,7 +66,7 @@ export default class CatGerenciaController {
 
     return res.status(200).json({
       ok: true,
-      message: 'Actualizado correctamente la gerencia: ' + response.response?.nombre,
+      message: 'Actualizado correctamente la gerencia: ' + response.response?.name,
       response: response.response,
       code: 200
     });

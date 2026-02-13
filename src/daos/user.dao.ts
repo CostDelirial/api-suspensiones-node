@@ -3,7 +3,7 @@ import IUser from '../interfaces/user.interface';
 
 export class UserDAO {
   static async findAll(): Promise<IUser[]> {
-    const result = await pool.query('SELECT u.uuid,u.ficha, u.name, r.nombre AS role, p.nombre AS nivel, u.status ' +
+    const result = await pool.query('SELECT u.uuid,u.ficha, u.name, r.name AS role, p.name AS nivel, u.status ' +
       'FROM "user" u LEFT JOIN cat_role r ON u.role = r.uuid ' +
       'LEFT JOIN cat_puesto p ON u.nivel = p.uuid;');
     return result.rows;
@@ -19,8 +19,8 @@ export class UserDAO {
     return result.rows[0] || null;
   }
 
-  static async findByName(nombre: string): Promise<IUser | null> {
-    const result = await pool.query('SELECT * FROM "user" WHERE name = $1 LIMIT 1', [nombre]);
+  static async findByName(name: string): Promise<IUser | null> {
+    const result = await pool.query('SELECT * FROM "user" WHERE name = $1 LIMIT 1', [name]);
     return result.rows[0] || null;
   }
 

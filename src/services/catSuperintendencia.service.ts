@@ -36,7 +36,7 @@ static async updateCatSuperintendencia(id: string, body: IcatSuperintendencia) {
       };
     }
 
-    // Validar nombre duplicado solo si cambia
+    // Validar name duplicado solo si cambia
     if (body.name && body.name !== superintendenciaActual.name) {
       const exists = await CatSuperintendenciaDAO.findByName(body.name);
       if (exists) {

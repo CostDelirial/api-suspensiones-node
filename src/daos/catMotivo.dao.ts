@@ -3,13 +3,13 @@ import ICatMotivo from '../interfaces/catMotivo.interface';
 
 export class CatMotivoDAO {
   static async findAll(): Promise<ICatMotivo[]> {
-    const result = await pool.query('SELECT uuid, nombre, logistico, status FROM cat_motivo');
+    const result = await pool.query('SELECT uuid, name, logistico, status FROM cat_motivo');
     return result.rows;
   }
 
-  static async findByName(nombre: string): Promise<ICatMotivo | null> {
+  static async findByName(name: string): Promise<ICatMotivo | null> {
     console.log("va a ejecutar el query")
-    const result = await pool.query('SELECT * FROM cat_motivo WHERE nombre = $1 LIMIT 1', [nombre]);
+    const result = await pool.query('SELECT * FROM cat_motivo WHERE name = $1 LIMIT 1', [name]);
     return result.rows[0] || null;
   }
 
@@ -22,7 +22,7 @@ export class CatMotivoDAO {
   static async create(motivo: ICatMotivo): Promise<ICatMotivo> {
     console.log("DATOS del motivo: ",motivo)
     const query = `
-      INSERT INTO cat_motivo (nombre, usuario_creacion, status, fecha_creacion, logistico, uuid_semaforo)
+      INSERT INTO cat_motivo (name, usuario_creacion, status, fecha_creacion, logistico, uuid_semaforo)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`;
     const values = [motivo.name, motivo.usuarioCreacion, motivo.status || 'true', new Date(), motivo.logistico, motivo.uuidSemaforo ];
@@ -36,7 +36,7 @@ export class CatMotivoDAO {
   const query = `
     UPDATE cat_motivo
     SET
-      nombre = $1,
+      name = $1,
       status = $2,
       usuario_actualizacion = $3,
       fecha_actualizacion = $4

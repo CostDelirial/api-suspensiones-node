@@ -35,7 +35,7 @@ export class CatSubgerenciaService {
       };
     }
 
-    // Validar nombre duplicado solo si cambia
+    // Validar name duplicado solo si cambia
     if (body.name && body.name !== subgerenciaActual.name) {
       const exists = await CatSubgerenciaDAO.findByName(body.name);
       if (exists) {
