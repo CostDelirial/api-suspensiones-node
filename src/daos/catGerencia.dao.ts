@@ -48,7 +48,7 @@ export class CatGerenciaDAO {
   }
 
   static async findById(id: string): Promise<ICatGerencia | null> {
-    const query = 'SELECT * FROM cat_gerencia WHERE id = $1';
+    const query = 'SELECT * FROM cat_gerencia WHERE uuid = $1';
     const result = await pool.query(query, [id]);
     return result.rows[0] || null;
   }

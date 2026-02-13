@@ -13,7 +13,7 @@ export class CatDuctoDAO {
   }
 
   static async findById(id: string): Promise<ICatDucto | null> {
-    const result = await pool.query('SELECT * FROM cat_ducto WHERE id = $1', [id]);
+    const result = await pool.query('SELECT * FROM cat_ducto WHERE uuid = $1', [id]);
     return result.rows[0] || null;
   }
 
